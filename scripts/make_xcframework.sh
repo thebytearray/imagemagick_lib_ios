@@ -4,12 +4,12 @@ set -euo pipefail
 SRC_DIR=${1:-$(pwd)}
 OUT_DIR=${2:-$(pwd)}
 HEADERS_DIR=${3:-"$SRC_DIR/include"}
-# platforms to include: ios or ios+mac
+# platforms to include: ios|mac|ios+mac
 PACK_PLATFORMS=${4:-ios}
 # include Intel iOS Simulator x86_64: 1 to include, 0 to exclude
 INCLUDE_X86_SIM=${5:-0}
 
-mkdir -p "$OUT_DIR/tmp_device" "$OUT_DIR/tmp_sim"
+mkdir -p "$OUT_DIR/tmp_device" "$OUT_DIR/tmp_sim" "$OUT_DIR/tmp_mac"
 
 ALL_LIBS=()
 while IFS= read -r -d '' f; do
@@ -25,17 +25,18 @@ for f in "${ALL_LIBS[@]}"; do
     SIM_LIBS+=("$f")
     continue
   fi
+  if [[ "$bn" == *_mac.a ]]; then
+    MAC_LIBS+=("$f")
+    continue
+  fi
   if [[ "$bn" == *_x86.a ]]; then
     if [[ "$INCLUDE_X86_SIM" == 1 ]]; then
       SIM_LIBS+=("$f")
-    else
-      MAC_LIBS+=("$f")
     fi
     continue
   fi
   info=$(lipo -info "$f" || true)
   echo "$info" | grep -E -q "arm64|armv7s|armv7" && DEV_LIBS+=("$f") || true
-  echo "$info" | grep -q "x86_64" && MAC_LIBS+=("$f") || true
 done
 
 has_token() {
@@ -90,26 +91,41 @@ extract_and_merge() {
 
 args=()
 # merge per-arch into single libraries to avoid duplicate platform identifiers
-extract_and_merge device "${DEV_LIBS[@]}"
-extract_and_merge sim "${SIM_LIBS[@]}"
-if [[ "$PACK_PLATFORMS" == ios+mac ]]; then
+if [[ "$PACK_PLATFORMS" == ios || "$PACK_PLATFORMS" == ios+mac ]]; then
+  extract_and_merge device "${DEV_LIBS[@]}"
+  extract_and_merge sim "${SIM_LIBS[@]}"
+fi
+if [[ "$PACK_PLATFORMS" == mac || "$PACK_PLATFORMS" == ios+mac ]]; then
+  extract_and_merge mac "${MAC_LIBS[@]}"
+fi
+
+# auto include mac when mac libs exist
+if [[ "$PACK_PLATFORMS" == ios && ${#MAC_LIBS[@]} -gt 0 ]]; then
   extract_and_merge mac "${MAC_LIBS[@]}"
 fi
 
 # collect merged outputs
-# reset arg list
-args=()
-if [[ -f "$OUT_DIR/tmp_device_list.txt" ]]; then
-  while IFS= read -r lib; do
-    [[ -f "$lib" ]] && args+=( -library "$lib" -headers "$HEADERS_DIR" )
-  done < "$OUT_DIR/tmp_device_list.txt"
+if [[ "$PACK_PLATFORMS" == ios || "$PACK_PLATFORMS" == ios+mac ]]; then
+  if [[ -f "$OUT_DIR/tmp_device_list.txt" ]]; then
+    while IFS= read -r lib; do
+      [[ -f "$lib" ]] && args+=( -library "$lib" -headers "$HEADERS_DIR" )
+    done < "$OUT_DIR/tmp_device_list.txt"
+  fi
+  if [[ -f "$OUT_DIR/tmp_sim_list.txt" ]]; then
+    while IFS= read -r lib; do
+      [[ -f "$lib" ]] && args+=( -library "$lib" -headers "$HEADERS_DIR" )
+    done < "$OUT_DIR/tmp_sim_list.txt"
+  fi
 fi
-if [[ -f "$OUT_DIR/tmp_sim_list.txt" ]]; then
-  while IFS= read -r lib; do
-    [[ -f "$lib" ]] && args+=( -library "$lib" -headers "$HEADERS_DIR" )
-  done < "$OUT_DIR/tmp_sim_list.txt"
+if [[ "$PACK_PLATFORMS" == mac || "$PACK_PLATFORMS" == ios+mac ]]; then
+  if [[ -f "$OUT_DIR/tmp_mac_list.txt" ]]; then
+    while IFS= read -r lib; do
+      [[ -f "$lib" ]] && args+=( -library "$lib" -headers "$HEADERS_DIR" )
+    done < "$OUT_DIR/tmp_mac_list.txt"
+  fi
 fi
-if [[ "$PACK_PLATFORMS" == ios+mac && -f "$OUT_DIR/tmp_mac_list.txt" ]]; then
+
+if [[ "$PACK_PLATFORMS" == ios && -f "$OUT_DIR/tmp_mac_list.txt" ]]; then
   while IFS= read -r lib; do
     [[ -f "$lib" ]] && args+=( -library "$lib" -headers "$HEADERS_DIR" )
   done < "$OUT_DIR/tmp_mac_list.txt"

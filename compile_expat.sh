@@ -88,6 +88,18 @@ expat () {
 
 		expat_compile
 		restore
+    elif [ "$1" == "mac-arm64" ]; then
+        save
+        macflags $1
+        echo "[|- CONFIG $BUILDINGFOR]"
+        try ./configure \
+        --prefix=${EXPAT_LIB_DIR}_${BUILDINGFOR} \
+        --enable-shared \
+        --enable-static \
+        --host=${MAC_HOST_TRIPLE} \
+        CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
+        expat_compile
+        restore
 	else
 		echo "[ERR: Nothing to do for $1]"
 	fi
@@ -141,6 +153,9 @@ expat () {
         fi
         if [ -e "$LIB_DIR/libexpat.a.x86_64" ]; then
             try cp "$LIB_DIR/libexpat.a.x86_64" "$LIB_DIR/libexpat_x86.a"
+        fi
+        if [ -e "$LIB_DIR/libexpat.a.mac-arm64" ]; then
+            try cp "$LIB_DIR/libexpat.a.mac-arm64" "$LIB_DIR/libexpat_mac.a"
         fi
     fi
 }

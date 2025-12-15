@@ -30,7 +30,7 @@ tiff () {
         save
         armsimflags
         echo "[|- CONFIG $BUILDINGFOR]"
-        try ./configure prefix=${TIFF_LIB_DIR}_${BUILDINGFOR} --enable-shared --enable-static --disable-cxx --host=arm-apple-darwin
+        try ./configure prefix=${TIFF_LIB_DIR}_${BUILDINGFOR} --enable-shared --enable-static --disable-cxx --host=${MAC_HOST_TRIPLE}
         tiff_compile
         restore
     elif  [ "$1" == "armv7" ] || [ "$1" == "armv7s" ] || [ "$1" == "arm64" ]; then
@@ -45,6 +45,13 @@ tiff () {
         intelflags $1
         echo "[|- CONFIG $BUILDINGFOR]"
         try ./configure prefix=${TIFF_LIB_DIR}_${BUILDINGFOR} --enable-shared --enable-static --disable-cxx --host=${BUILDINGFOR}-apple-darwin
+        tiff_compile
+        restore
+    elif [ "$1" == "mac-arm64" ]; then
+        save
+        macflags $1
+        echo "[|- CONFIG $BUILDINGFOR]"
+        try ./configure prefix=${TIFF_LIB_DIR}_${BUILDINGFOR} --enable-shared --enable-static --disable-cxx --host=arm-apple-darwin
         tiff_compile
         restore
     else
@@ -101,6 +108,9 @@ tiff () {
         fi
         if [ -e "$LIB_DIR/$LIBNAME_tiff.x86_64" ]; then
             try cp "$LIB_DIR/$LIBNAME_tiff.x86_64" "$LIB_DIR/`basename $LIBNAME_tiff .a`_x86.a"
+        fi
+        if [ -e "$LIB_DIR/$LIBNAME_tiff.mac-arm64" ]; then
+            try cp "$LIB_DIR/$LIBNAME_tiff.mac-arm64" "$LIB_DIR/`basename $LIBNAME_tiff .a`_mac.a"
         fi
     fi
 }

@@ -54,12 +54,19 @@ png () {
 	elif [ "$1" == "i386" ] || [ "$1" == "x86_64" ]; then
 		save
 		intelflags $1
-        echo "2"
+		echo "2"
 		echo "[|- CONFIG $BUILDINGFOR]"
 		export CC="$(xcode-select -print-path)/usr/bin/gcc" # override clang
 		try ./configure prefix=${PNG_LIB_DIR}_${BUILDINGFOR} --enable-shared --enable-static --host=${BUILDINGFOR}-apple-darwin
 		png_compile
 		restore
+    elif [ "$1" == "mac-arm64" ]; then
+        save
+        macflags $1
+        echo "[|- CONFIG $BUILDINGFOR]"
+        try ./configure prefix=${PNG_LIB_DIR}_${BUILDINGFOR} --enable-shared --enable-static --host=${MAC_HOST_TRIPLE}
+        png_compile
+        restore
 	else
 		echo "[ERR: Nothing to do for $1]"
 	fi
@@ -115,6 +122,9 @@ png () {
 		 fi
 		 if [ -e "$LIB_DIR/libpng.a.x86_64" ]; then
 			 try cp "$LIB_DIR/libpng.a.x86_64" "$LIB_DIR/libpng_x86.a"
+		 fi
+		 if [ -e "$LIB_DIR/libpng.a.mac-arm64" ]; then
+			 try cp "$LIB_DIR/libpng.a.mac-arm64" "$LIB_DIR/libpng_mac.a"
 		 fi
 	 fi
 }

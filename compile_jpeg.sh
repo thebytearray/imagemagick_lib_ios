@@ -51,6 +51,13 @@ jpeg () {
 		try ./configure prefix=${JPEG_LIB_DIR}_${BUILDINGFOR} --enable-shared --enable-static --host=${BUILDINGFOR}-apple-darwin
 		jpeg_compile
 		restore
+    elif [ "$1" == "mac-arm64" ]; then
+        save
+        macflags $1
+        echo "[|- CONFIG $BUILDINGFOR]"
+        try sh ./configure prefix=${JPEG_LIB_DIR}_${BUILDINGFOR} --enable-shared --enable-static --host=${MAC_HOST_TRIPLE}
+        jpeg_compile
+        restore
 	else
 		echo "[ERR: Nothing to do for $1]"
 	fi
@@ -106,6 +113,9 @@ jpeg () {
 		 fi
 		 if [ -e "$LIB_DIR/$LIBNAME_jpeg.x86_64" ]; then
 			 try cp "$LIB_DIR/$LIBNAME_jpeg.x86_64" "$LIB_DIR/`basename $LIBNAME_jpeg .a`_x86.a"
+		 fi
+		 if [ -e "$LIB_DIR/$LIBNAME_jpeg.mac-arm64" ]; then
+			 try cp "$LIB_DIR/$LIBNAME_jpeg.mac-arm64" "$LIB_DIR/`basename $LIBNAME_jpeg .a`_mac.a"
 		 fi
 	 fi
 }

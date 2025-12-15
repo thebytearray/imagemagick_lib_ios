@@ -28,6 +28,7 @@ armflags () {
 	export CXXFLAGS="$ARM_CXXFLAGS"
 	export LD="$ARM_LD"
 	export LDFLAGS="$ARM_LDFLAGS"
+	export CPP="$ARM_CC -E $ARM_CFLAGS"
 
 	# export what we are building for
 	export BUILDINGFOR="$1"
@@ -70,6 +71,7 @@ armsimflags () {
 	export CXXFLAGS="$SIM_CXXFLAGS"
 	export LD="$SIM_LD"
 	export LDFLAGS="$SIM_LDFLAGS"
+	export CPP="$SIM_CC -E $SIM_CFLAGS"
 
     # export what we are building for
     export BUILDINGFOR="arm64-sim"
@@ -84,14 +86,40 @@ intelflags () {
 	export INTEL_CFLAGS="$INTEL_CFLAGS -I$SIMSDKROOT/usr/include"
 	
 	# apply INTEL_CC values
-    export CC="$(xcode-select -print-path)/usr/bin/gcc"
+	    export CC="$(xcode-select -print-path)/usr/bin/gcc"
 #	export CC="$INTEL_CC"
-	export CCP="$INTEL_CC -E"
+	export CPP="$INTEL_CC -E $INTEL_CFLAGS"
 	export CFLAGS="$INTEL_CFLAGS"
 	export LD="$INTEL_LD"
 	
 	# export what we are building for
 	export BUILDINGFOR="$1"
+}
+
+macflags () {
+    export MAC_CC=$(xcrun -find -sdk macosx clang)
+    export MAC_CXX=$(xcrun -find -sdk macosx clang++)
+    export MAC_LD=$(xcrun -find -sdk macosx ld)
+
+    export MACSDKROOT=$(xcrun --sdk macosx --show-sdk-path)
+    export MACOS_MIN_VER=${MACOS_MIN_VER:-11.0}
+    export MAC_HOST_TRIPLE=${MAC_HOST_TRIPLE:-arm-apple-darwin}
+    export MAC_CFLAGS="-arch arm64"
+    export MAC_CFLAGS="$MAC_CFLAGS -isysroot $MACSDKROOT"
+    export MAC_CFLAGS="$MAC_CFLAGS -mmacosx-version-min=$MACOS_MIN_VER"
+    export MAC_CXXFLAGS="$MAC_CFLAGS"
+    export MAC_LDFLAGS="-arch arm64 -isysroot $MACSDKROOT"
+    export MAC_LDFLAGS="$MAC_LDFLAGS -mmacosx-version-min=$MACOS_MIN_VER"
+
+    export CC="$MAC_CC -isysroot $MACSDKROOT -mmacosx-version-min=$MACOS_MIN_VER -arch arm64"
+    export CXX="$MAC_CXX -isysroot $MACSDKROOT -mmacosx-version-min=$MACOS_MIN_VER -arch arm64"
+	export CFLAGS="$MAC_CFLAGS"
+	export CXXFLAGS="$MAC_CXXFLAGS"
+	export LD="$MAC_LD"
+	export LDFLAGS="$MAC_LDFLAGS"
+	export CPP="$MAC_CC -E $MAC_CFLAGS"
+
+    export BUILDINGFOR="mac-arm64"
 }
 
 save() {

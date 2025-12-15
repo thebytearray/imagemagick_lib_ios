@@ -1,8 +1,8 @@
-prefix=/Users/macbookpro2022m2/Desktop/imagemagick_lib_ios/target/imagemagick_arm64
+prefix=/Users/macbookpro2022m2/Desktop/imagemagick_lib_ios/target/imagemagick_mac-arm64
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include/ImageMagick-7
-includearchdir=/Users/macbookpro2022m2/Desktop/imagemagick_lib_ios/target/imagemagick_arm64/include/ImageMagick-7
+includearchdir=/Users/macbookpro2022m2/Desktop/imagemagick_lib_ios/target/imagemagick_mac-arm64/include/ImageMagick-7
 libname=Magick++-7.Q8HDRI
  
 Name: Magick++

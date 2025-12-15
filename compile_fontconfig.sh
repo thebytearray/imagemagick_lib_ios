@@ -3,10 +3,16 @@
 fontconfig_compile() {
     echo "[|- MAKE $BUILDINGFOR]"
     try make -j$CORESNUM
-    try make install
+    try make install-exec
+    mkdir -p ${FONTCONFIG_LIB_DIR}_${BUILDINGFOR}/etc/fonts
+    if [ -f ./fonts.conf ]; then
+        try cp ./fonts.conf ${FONTCONFIG_LIB_DIR}_${BUILDINGFOR}/etc/fonts/fonts.conf
+    elif [ -f fonts.conf ]; then
+        try cp fonts.conf ${FONTCONFIG_LIB_DIR}_${BUILDINGFOR}/etc/fonts/fonts.conf
+    fi
     echo "[|- CP STATIC/DYLIB $BUILDINGFOR]"
     mkdir -p $LIB_DIR/fontconfig_${BUILDINGFOR}_dylib/
- 
+
 	try cp ${FONTCONFIG_LIB_DIR}_${BUILDINGFOR}/lib/$LIBPATH_fontconfig $LIB_DIR/libfontconfig.a.$BUILDINGFOR
 	try cp ${FONTCONFIG_LIB_DIR}_${BUILDINGFOR}/lib/$LIBPATH_fontconfig_dylib $LIB_DIR/fontconfig_${BUILDINGFOR}_dylib/libfontconfig.dylib
 	first=`echo $ARCHS | awk '{print $1;}'`
@@ -105,6 +111,26 @@ fontconfig () {
         
         fontconfig_compile
         restore
+    elif [ "$1" == "mac-arm64" ]; then
+        save
+        macflags $1
+        echo "[|- CONFIG $BUILDINGFOR]"
+        # 清理并刷新 autotools（部分版本在 macOS 需要）
+        if [ -f Makefile ]; then
+            try make distclean
+        fi
+        autoreconf -f -i || true
+        # 依赖路径
+        export PKG_CONFIG_PATH="${FREETYPE_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/:${EXPAT_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/:$PKG_CONFIG_PATH"
+        export LDFLAGS="$LDFLAGS -L${FREETYPE_LIB_DIR}_${BUILDINGFOR}/lib -L${PNG_LIB_DIR}_${BUILDINGFOR}/lib -L${EXPAT_LIB_DIR}_${BUILDINGFOR}/lib"
+        try ./configure \
+        --prefix=${FONTCONFIG_LIB_DIR}_${BUILDINGFOR} \
+        --enable-shared \
+        --enable-static \
+        --host=${MAC_HOST_TRIPLE} \
+        CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
+        fontconfig_compile
+        restore
     else
         echo "[ERR: Nothing to do for $1]"
     fi
@@ -158,6 +184,9 @@ fontconfig () {
         fi
         if [ -e "$LIB_DIR/libfontconfig.a.x86_64" ]; then
             try cp "$LIB_DIR/libfontconfig.a.x86_64" "$LIB_DIR/libfontconfig_x86.a"
+        fi
+        if [ -e "$LIB_DIR/libfontconfig.a.mac-arm64" ]; then
+            try cp "$LIB_DIR/libfontconfig.a.mac-arm64" "$LIB_DIR/libfontconfig_mac.a"
         fi
     fi
 }

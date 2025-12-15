@@ -132,6 +132,30 @@ freetype () {
          
         freetype_compile
         restore
+    elif [ "$1" == "mac-arm64" ]; then
+        save
+        macflags $1
+        echo "[|- CONFIG $BUILDINGFOR]"
+        export PKG_CONFIG_PATH="${PNG_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/:$PKG_CONFIG_PATH"
+        try ./configure \
+        prefix=${FREETYPE_LIB_DIR}_${BUILDINGFOR} \
+        --with-pic \
+        --with-zlib \
+        --with-png \
+        --without-harfbuzz \
+        --without-bzip2 \
+        --without-fsref \
+        --without-quickdraw-toolbox \
+        --without-quickdraw-carbon \
+        --without-ats \
+        --enable-static \
+        --enable-shared \
+        --disable-fast-install \
+        --disable-mmap \
+        --host=${MAC_HOST_TRIPLE} \
+        CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
+        freetype_compile
+        restore
     else
         echo "[ERR: Nothing to do for $1]"
     fi
@@ -185,6 +209,9 @@ freetype () {
         fi
         if [ -e "$LIB_DIR/libfreetype.a.x86_64" ]; then
             try cp "$LIB_DIR/libfreetype.a.x86_64" "$LIB_DIR/libfreetype_x86.a"
+        fi
+        if [ -e "$LIB_DIR/libfreetype.a.mac-arm64" ]; then
+            try cp "$LIB_DIR/libfreetype.a.mac-arm64" "$LIB_DIR/libfreetype_mac.a"
         fi
     fi
 }
