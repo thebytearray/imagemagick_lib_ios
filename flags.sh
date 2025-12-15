@@ -33,6 +33,49 @@ armflags () {
 	export BUILDINGFOR="$1"
 }
 
+armsimflags () {
+	export SIM_CC=$(xcrun -find -sdk iphonesimulator clang)
+	export SIM_CXX=$(xcrun -find -sdk iphonesimulator clang++)
+	export SIM_LD=$(xcrun -find -sdk iphonesimulator ld)
+
+	export SIMSDKROOT=$(xcrun --sdk iphonesimulator --show-sdk-path)
+
+	# 架构：arm64 (适用于 Apple Silicon)
+	export SIM_CFLAGS="-arch arm64"
+	export SIM_CFLAGS="$SIM_CFLAGS -I$SIMSDKROOT/usr/include"
+	export SIM_CFLAGS="$SIM_CFLAGS -isysroot $SIMSDKROOT"
+	export SIM_CFLAGS="$SIM_CFLAGS -mios-simulator-version-min=$SDKMINVER"
+	export SIM_CFLAGS="$SIM_CFLAGS -target arm64-apple-ios-simulator"
+
+	# C++
+	export SIM_CXXFLAGS="-arch arm64"
+	export SIM_CXXFLAGS="$SIM_CFLAGS -I$SIMSDKROOT/usr/include"
+	export SIM_CXXFLAGS="$SIM_CFLAGS -isysroot $SIMSDKROOT"
+	export SIM_CXXFLAGS="$SIM_CFLAGS -mios-simulator-version-min=$SDKMINVER"
+	export SIM_CXXFLAGS="$SIM_CFLAGS -target arm64-apple-ios-simulator"
+
+	# 链接
+	export SIM_LDFLAGS="-arch arm64 -isysroot $SIMSDKROOT"
+	export SIM_LDFLAGS="$SIM_LDFLAGS -mios-simulator-version-min=$SDKMINVER"
+	export SIM_LDFLAGS="$SIM_LDFLAGS -target arm64-apple-ios-simulator"
+
+	# 优化 & bitcode
+	export SIM_CFLAGS="$SIM_CFLAGS -O3"
+	# 模拟器不支持 bitcode，不能加 -fembed-bitcode
+
+	# apply SIM_XX values
+	export CC="$SIM_CC"
+	export CXX="$SIM_CXX"
+	export CFLAGS="$SIM_CFLAGS"
+	export CXXFLAGS="$SIM_CXXFLAGS"
+	export LD="$SIM_LD"
+	export LDFLAGS="$SIM_LDFLAGS"
+
+    # export what we are building for
+    export BUILDINGFOR="arm64-sim"
+}
+
+
 intelflags () {
 	export INTEL_CC=$(xcrun -find -sdk iphonesimulator clang)
 	export INTEL_LD=$(xcrun -find -sdk iphonesimulator ld)

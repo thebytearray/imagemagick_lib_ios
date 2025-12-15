@@ -6,7 +6,8 @@ export OUTPUT_FILE="$(pwd)/$(date +%Y%m%d-%H%M)_im.log"
 
 # List of architectures to build
 #export ARCHS="armv7 armv7s arm64 i386 x86_64"
-export ARCHS="x86_64 arm64"
+# arm64-sim 
+export ARCHS="arm64-sim arm64"
 
 # Get number of cores to speed up make (make -j$CORESNUM)
 export CORESNUM=`sysctl hw.ncpu | awk '{print $2}'`
@@ -40,7 +41,7 @@ export BUILDROOT="$IMROOT/build"
 export IM_DIR="$BUILDROOT/ImageMagick-$IM_VERSION"
 export IM_DELEGATES_DIR="$IM_DIR/IMDelegates/"
 export JPEG_DIR="$IM_DIR/IMDelegates/jpeg-9a"
-export PNG_DIR="$IM_DIR/IMDelegates/libpng-1.6.37"
+export PNG_DIR="$IM_DIR/IMDelegates/libpng-1.6.53"
 export WEBP_DIR="$IM_DIR/IMDelegates/libwebp-1.3.2"
 export TIFF_DIR="$IM_DIR/IMDelegates/tiff-4.0.4"
 export OPENJPEG_DIR="$IM_DIR/IMDelegates/openjpeg-2.4.0"

@@ -15,6 +15,7 @@ export IM_VERSION="$1"
 # Compilation scripts
 
 # . $(dirname $0)/compile_webp.sh  # libwebp
+# . $(dirname $0)/compile_expat.sh # expat
 # . $(dirname $0)/compile_png.sh  # libPNG
 # . $(dirname $0)/compile_jpeg.sh # JPEG
 # . $(dirname $0)/compile_tiff.sh # TIFF

@@ -2,12 +2,22 @@
 
 # If command fails the script exits
 try () {
-	if [ $VERBOSE -eq 1 ]; then
+    if [ "$1" = "./configure" ] || { [ "$1" = "sh" ] && [ "$2" = "./configure" ]; }; then
+        if [ ! -f ./configure ]; then
+            if command -v autoreconf >/dev/null 2>&1; then
+                autoreconf -f -i >> $OUTPUT_FILE 2>&1
+            fi
+            if [ -f autogen.sh ]; then
+                sh ./autogen.sh >> $OUTPUT_FILE 2>&1
+            fi
+        fi
+    fi
+    if [ $VERBOSE -eq 1 ]; then
         echo 1
-		"$@" | tee -a $OUTPUT_FILE 2>&1 || exit -1
-	else
-		"$@" >> $OUTPUT_FILE 2>&1 || exit -1
-	fi
+        "$@" | tee -a $OUTPUT_FILE 2>&1 || exit -1
+    else
+        "$@" >> $OUTPUT_FILE 2>&1 || exit -1
+    fi
 }
 
 # Prepares the directory structure needed for the compilation and any additional
@@ -40,6 +50,10 @@ prepare() {
 	mkdir -p $LIB_DIR/include/webp
 	mkdir -p $LIB_DIR/include/tiff
 	mkdir -p $LIB_DIR/include/wand
+	mkdir -p $LIB_DIR/include/expat
+	mkdir -p $LIB_DIR/include/fontconfig
+	mkdir -p $LIB_DIR/include/freetype
+	mkdir -p $LIB_DIR/include/ghostscript
 	# lib directories
 	mkdir -p $JPEG_LIB_DIR
 	mkdir -p $PNG_LIB_DIR

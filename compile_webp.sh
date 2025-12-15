@@ -62,7 +62,23 @@ webp () {
 
     
 	
-	if [ "$1" == "armv7" ] || [ "$1" == "armv7s" ] || [ "$1" == "arm64" ]; then
+	if [ "$1" == "arm64-sim" ]; then
+		save
+		armsimflags
+		echo "[|- CONFIG $BUILDINGFOR]"
+		export CC="$(xcode-select -print-path)/usr/bin/gcc" # override clang
+		
+		try ./configure \
+		--prefix=${WEBP_LIB_DIR}_${BUILDINGFOR} \
+		--enable-shared \
+		--enable-static \
+		--enable-libwebpdecoder --enable-swap-16bit-csp \
+		--enable-libwebpmux \
+		--host=aarch64-apple-darwin
+		
+		webp_compile
+		restore
+	elif [ "$1" == "armv7" ] || [ "$1" == "armv7s" ] || [ "$1" == "arm64" ]; then
 		save
 		armflags $1
 #        echo "1"
@@ -117,14 +133,54 @@ webp () {
 combine_libs() {
     local lib_name=$1
     joinlibs=$(check_for_archs $LIB_DIR/$lib_name.a)
-    if [ $joinlibs == "OK" ]; then
+    if [ $joinlibs == "OK" ] && [ "$ENABLE_FAT" = "1" ]; then
         echo "[|- COMBINE $ARCHS]"
-        accumul=""
+        accumul_dev=""
+        accumul_sim=""
         for i in $ARCHS; do
-            accumul="$accumul -arch $i $LIB_DIR/$lib_name.a.$i"
+            case "$i" in
+                armv7|armv7s|arm64)
+                    if [ -e $LIB_DIR/$lib_name.a.$i ]; then
+                        accumul_dev="$accumul_dev -arch $i $LIB_DIR/$lib_name.a.$i"
+                    fi
+                ;;
+                x86_64)
+                    if [ -e $LIB_DIR/$lib_name.a.$i ]; then
+                        accumul_sim="$accumul_sim -arch x86_64 $LIB_DIR/$lib_name.a.$i"
+                    fi
+                ;;
+                arm64-sim)
+                    if [ -e $LIB_DIR/$lib_name.a.$i ]; then
+                        accumul_sim="$accumul_sim -arch arm64 $LIB_DIR/$lib_name.a.$i"
+                    fi
+                ;;
+            esac
         done
-        # combine the static libraries
-        try lipo $accumul -create -output $LIB_DIR/$lib_name.a
-        echo "[+ DONE]"
+        if [ -n "$accumul_dev" ]; then
+            try lipo $accumul_dev -create -output $LIB_DIR/$lib_name.a
+        fi
+        if [ -n "$accumul_sim" ]; then
+            try lipo $accumul_sim -create -output $LIB_DIR/${lib_name}_sim.a
+        fi
+    fi
+
+    if [ "$ENABLE_FAT" != "1" ]; then
+        dev_src=""
+        for cand in arm64 armv7s armv7; do
+            file="$LIB_DIR/$lib_name.a.$cand"
+            if [ -e "$file" ]; then
+                dev_src="$file"
+                break
+            fi
+        done
+        if [ -n "$dev_src" ]; then
+            try cp "$dev_src" "$LIB_DIR/$lib_name.a"
+        fi
+        if [ -e "$LIB_DIR/$lib_name.a.arm64-sim" ]; then
+            try cp "$LIB_DIR/$lib_name.a.arm64-sim" "$LIB_DIR/${lib_name}_sim.a"
+        fi
+        if [ -e "$LIB_DIR/$lib_name.a.x86_64" ]; then
+            try cp "$LIB_DIR/$lib_name.a.x86_64" "$LIB_DIR/${lib_name}_x86.a"
+        fi
     fi
 }
