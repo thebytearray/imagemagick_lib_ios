@@ -156,6 +156,30 @@ freetype () {
         CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
         freetype_compile
         restore
+    elif [ "$1" == "mac-x86_64" ]; then
+        save
+        macx86flags
+        echo "[|- CONFIG $BUILDINGFOR]"
+        export PKG_CONFIG_PATH="${PNG_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/:$PKG_CONFIG_PATH"
+        try ./configure \
+        prefix=${FREETYPE_LIB_DIR}_${BUILDINGFOR} \
+        --with-pic \
+        --with-zlib \
+        --with-png \
+        --without-harfbuzz \
+        --without-bzip2 \
+        --without-fsref \
+        --without-quickdraw-toolbox \
+        --without-quickdraw-carbon \
+        --without-ats \
+        --enable-static \
+        --enable-shared \
+        --disable-fast-install \
+        --disable-mmap \
+        --host=${MAC_HOST_TRIPLE} \
+        CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
+        freetype_compile
+        restore
     else
         echo "[ERR: Nothing to do for $1]"
     fi
@@ -210,8 +234,14 @@ freetype () {
         if [ -e "$LIB_DIR/libfreetype.a.x86_64" ]; then
             try cp "$LIB_DIR/libfreetype.a.x86_64" "$LIB_DIR/libfreetype_x86.a"
         fi
-        if [ -e "$LIB_DIR/libfreetype.a.mac-arm64" ]; then
-            try cp "$LIB_DIR/libfreetype.a.mac-arm64" "$LIB_DIR/libfreetype_mac.a"
+        mac_arm="$LIB_DIR/libfreetype.a.mac-arm64"
+        mac_x86="$LIB_DIR/libfreetype.a.mac-x86_64"
+        if [ -e "$mac_arm" ] && [ -e "$mac_x86" ]; then
+            try lipo -create -output "$LIB_DIR/libfreetype_mac.a" "$mac_arm" "$mac_x86"
+        elif [ -e "$mac_arm" ]; then
+            try cp "$mac_arm" "$LIB_DIR/libfreetype_mac.a"
+        elif [ -e "$mac_x86" ]; then
+            try cp "$mac_x86" "$LIB_DIR/libfreetype_mac.a"
         fi
     fi
 }

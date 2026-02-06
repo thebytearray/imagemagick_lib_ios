@@ -122,6 +122,28 @@ macflags () {
     export BUILDINGFOR="mac-arm64"
 }
 
+macx86flags () {
+    export MAC_CC=$(xcrun -find -sdk macosx clang)
+    export MAC_CXX=$(xcrun -find -sdk macosx clang++)
+    export MAC_LD=$(xcrun -find -sdk macosx ld)
+    export MACSDKROOT=$(xcrun --sdk macosx --show-sdk-path)
+    export MACOS_MIN_VER=${MACOS_MIN_VER:-11.0}
+    export MAC_HOST_TRIPLE="x86_64-apple-darwin"
+    export MAC_CFLAGS="-arch x86_64"
+    export MAC_CFLAGS="$MAC_CFLAGS -isysroot $MACSDKROOT"
+    export MAC_CFLAGS="$MAC_CFLAGS -mmacosx-version-min=$MACOS_MIN_VER"
+    export MAC_CXXFLAGS="$MAC_CFLAGS"
+    export MAC_LDFLAGS="-arch x86_64 -isysroot $MACSDKROOT"
+    export MAC_LDFLAGS="$MAC_LDFLAGS -mmacosx-version-min=$MACOS_MIN_VER"
+    export CC="$MAC_CC -isysroot $MACSDKROOT -mmacosx-version-min=$MACOS_MIN_VER -arch x86_64"
+    export CXX="$MAC_CXX -isysroot $MACSDKROOT -mmacosx-version-min=$MACOS_MIN_VER -arch x86_64"
+    export CFLAGS="$MAC_CFLAGS"
+    export CXXFLAGS="$MAC_CXXFLAGS"
+    export LD="$MAC_LD"
+    export LDFLAGS="$MAC_LDFLAGS"
+    export CPP="$MAC_CC -E $MAC_CFLAGS"
+    export BUILDINGFOR="mac-x86_64"
+}
 save() {
 	export OLD_CC="$CC"
 	export OLD_CXX="$CXX"

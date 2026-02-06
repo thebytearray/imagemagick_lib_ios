@@ -54,6 +54,13 @@ tiff () {
         try ./configure prefix=${TIFF_LIB_DIR}_${BUILDINGFOR} --enable-shared --enable-static --disable-cxx --host=arm-apple-darwin
         tiff_compile
         restore
+    elif [ "$1" == "mac-x86_64" ]; then
+        save
+        macx86flags
+        echo "[|- CONFIG $BUILDINGFOR]"
+        try ./configure prefix=${TIFF_LIB_DIR}_${BUILDINGFOR} --enable-shared --enable-static --disable-cxx --host=${MAC_HOST_TRIPLE}
+        tiff_compile
+        restore
     else
         echo "[ERR: Nothing to do for $1]"
     fi
@@ -109,8 +116,14 @@ tiff () {
         if [ -e "$LIB_DIR/$LIBNAME_tiff.x86_64" ]; then
             try cp "$LIB_DIR/$LIBNAME_tiff.x86_64" "$LIB_DIR/`basename $LIBNAME_tiff .a`_x86.a"
         fi
-        if [ -e "$LIB_DIR/$LIBNAME_tiff.mac-arm64" ]; then
-            try cp "$LIB_DIR/$LIBNAME_tiff.mac-arm64" "$LIB_DIR/`basename $LIBNAME_tiff .a`_mac.a"
+        mac_arm="$LIB_DIR/$LIBNAME_tiff.mac-arm64"
+        mac_x86="$LIB_DIR/$LIBNAME_tiff.mac-x86_64"
+        if [ -e "$mac_arm" ] && [ -e "$mac_x86" ]; then
+            try lipo -create -output "$LIB_DIR/`basename $LIBNAME_tiff .a`_mac.a" "$mac_arm" "$mac_x86"
+        elif [ -e "$mac_arm" ]; then
+            try cp "$mac_arm" "$LIB_DIR/`basename $LIBNAME_tiff .a`_mac.a"
+        elif [ -e "$mac_x86" ]; then
+            try cp "$mac_x86" "$LIB_DIR/`basename $LIBNAME_tiff .a`_mac.a"
         fi
     fi
 }

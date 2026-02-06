@@ -132,6 +132,19 @@ webp () {
         --host=${MAC_HOST_TRIPLE}
         webp_compile
         restore
+    elif [ "$1" == "mac-x86_64" ]; then
+        save
+        macx86flags
+        echo "[|- CONFIG $BUILDINGFOR]"
+        try ./configure \
+        --prefix=${WEBP_LIB_DIR}_${BUILDINGFOR} \
+        --enable-shared \
+        --enable-static \
+        --enable-libwebpdecoder --enable-swap-16bit-csp \
+        --enable-libwebpmux \
+        --host=${MAC_HOST_TRIPLE}
+        webp_compile
+        restore
     else
         echo "[ERR: Nothing to do for $1]"
     fi
@@ -195,8 +208,14 @@ combine_libs() {
         if [ -e "$LIB_DIR/$lib_name.a.x86_64" ]; then
             try cp "$LIB_DIR/$lib_name.a.x86_64" "$LIB_DIR/${lib_name}_x86.a"
         fi
-        if [ -e "$LIB_DIR/$lib_name.a.mac-arm64" ]; then
-            try cp "$LIB_DIR/$lib_name.a.mac-arm64" "$LIB_DIR/${lib_name}_mac.a"
+        mac_arm="$LIB_DIR/$lib_name.a.mac-arm64"
+        mac_x86="$LIB_DIR/$lib_name.a.mac-x86_64"
+        if [ -e "$mac_arm" ] && [ -e "$mac_x86" ]; then
+            try lipo -create -output "$LIB_DIR/${lib_name}_mac.a" "$mac_arm" "$mac_x86"
+        elif [ -e "$mac_arm" ]; then
+            try cp "$mac_arm" "$LIB_DIR/${lib_name}_mac.a"
+        elif [ -e "$mac_x86" ]; then
+            try cp "$mac_x86" "$LIB_DIR/${lib_name}_mac.a"
         fi
     fi
 }

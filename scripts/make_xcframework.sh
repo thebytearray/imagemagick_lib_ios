@@ -6,8 +6,11 @@ OUT_DIR=${2:-$(pwd)}
 HEADERS_DIR=${3:-"$SRC_DIR/include"}
 # platforms to include: ios|mac|ios+mac
 PACK_PLATFORMS=${4:-ios}
+# split mac archs into separate XCFramework outputs when set to 1
+PACK_MAC_SPLIT=${PACK_MAC_SPLIT:-0}
 # include Intel iOS Simulator x86_64: 1 to include, 0 to exclude
 INCLUDE_X86_SIM=${5:-0}
+PACK_MAC_UNIVERSAL=${PACK_MAC_UNIVERSAL:-1}
 
 mkdir -p "$OUT_DIR/tmp_device" "$OUT_DIR/tmp_sim" "$OUT_DIR/tmp_mac"
 
@@ -57,7 +60,10 @@ extract_and_merge() {
     if [[ -f "$lib" ]]; then
       info=$(lipo -info "$lib" || true)
       echo "$info" | grep -q "arm64" && { has_token "$archs" arm64 || archs="$archs arm64"; } || true
-      echo "$info" | grep -q "x86_64" && { has_token "$archs" x86_64 || archs="$archs x86_64"; } || true
+      # only include simulator x86_64 when explicitly requested
+      if [[ "$group" != "sim" || "$INCLUDE_X86_SIM" == 1 ]]; then
+        echo "$info" | grep -q "x86_64" && { has_token "$archs" x86_64 || archs="$archs x86_64"; } || true
+      fi
       echo "$info" | grep -q "armv7s" && { has_token "$archs" armv7s || archs="$archs armv7s"; } || true
       echo "$info" | grep -q "armv7" && { has_token "$archs" armv7 || archs="$archs armv7"; } || true
     fi
@@ -97,6 +103,20 @@ if [[ "$PACK_PLATFORMS" == ios || "$PACK_PLATFORMS" == ios+mac ]]; then
 fi
 if [[ "$PACK_PLATFORMS" == mac || "$PACK_PLATFORMS" == ios+mac ]]; then
   extract_and_merge mac "${MAC_LIBS[@]}"
+  if [[ "$PACK_MAC_SPLIT" == 0 && "$PACK_MAC_UNIVERSAL" == 1 ]]; then
+    if [[ -f "$OUT_DIR/IMAll_mac_arm64.a" || -f "$OUT_DIR/IMAll_mac_x86_64.a" ]]; then
+      uni="$OUT_DIR/IMAll_mac_universal.a"
+      inputs=()
+      [[ -f "$OUT_DIR/IMAll_mac_arm64.a" ]] && inputs+=("$OUT_DIR/IMAll_mac_arm64.a")
+      [[ -f "$OUT_DIR/IMAll_mac_x86_64.a" ]] && inputs+=("$OUT_DIR/IMAll_mac_x86_64.a")
+      if [[ ${#inputs[@]} -gt 0 ]]; then
+        lipo -create "${inputs[@]}" -output "$uni" || true
+        if [[ -f "$uni" ]]; then
+          echo "$uni" > "$OUT_DIR/tmp_mac_list.txt"
+        fi
+      fi
+    fi
+  fi
 fi
 
 # auto include mac when mac libs exist
@@ -118,10 +138,12 @@ if [[ "$PACK_PLATFORMS" == ios || "$PACK_PLATFORMS" == ios+mac ]]; then
   fi
 fi
 if [[ "$PACK_PLATFORMS" == mac || "$PACK_PLATFORMS" == ios+mac ]]; then
-  if [[ -f "$OUT_DIR/tmp_mac_list.txt" ]]; then
-    while IFS= read -r lib; do
-      [[ -f "$lib" ]] && args+=( -library "$lib" -headers "$HEADERS_DIR" )
-    done < "$OUT_DIR/tmp_mac_list.txt"
+  if [[ "$PACK_MAC_SPLIT" == 0 ]]; then
+    if [[ -f "$OUT_DIR/tmp_mac_list.txt" ]]; then
+      while IFS= read -r lib; do
+        [[ -f "$lib" ]] && args+=( -library "$lib" -headers "$HEADERS_DIR" )
+      done < "$OUT_DIR/tmp_mac_list.txt"
+    fi
   fi
 fi
 
@@ -131,12 +153,25 @@ if [[ "$PACK_PLATFORMS" == ios && -f "$OUT_DIR/tmp_mac_list.txt" ]]; then
   done < "$OUT_DIR/tmp_mac_list.txt"
 fi
 
-if [[ ${#args[@]} -eq 0 ]]; then
-  echo "no libraries to package"
-  exit 1
+if [[ "$PACK_MAC_SPLIT" == 1 && ( "$PACK_PLATFORMS" == mac || "$PACK_PLATFORMS" == ios+mac ) ]]; then
+  rm -rf "$OUT_DIR/IMAll.xcframework" || true
+  mac_arm="$OUT_DIR/IMAll_mac_arm64.a"
+  mac_x86="$OUT_DIR/IMAll_mac_x86_64.a"
+  base_args=("${args[@]}")
+  if [[ -f "$mac_arm" ]]; then
+    rm -rf "$OUT_DIR/IM_macos_arm64.xcframework" || true
+    xcodebuild -create-xcframework "${base_args[@]}" -library "$mac_arm" -headers "$HEADERS_DIR" -output "$OUT_DIR/IM_macos_arm64.xcframework"
+    echo "IM_macos_arm64.xcframework generated at $OUT_DIR/IM_macos_arm64.xcframework"
+  fi
+  if [[ -f "$mac_x86" ]]; then
+    rm -rf "$OUT_DIR/IM_macos_x86_64.xcframework" || true
+    xcodebuild -create-xcframework "${base_args[@]}" -library "$mac_x86" -headers "$HEADERS_DIR" -output "$OUT_DIR/IM_macos_x86_64.xcframework"
+    echo "IM_macos_x86_64.xcframework generated at $OUT_DIR/IM_macos_x86_64.xcframework"
+  fi
+  exit 0
 fi
 
 # cleanup previous output to avoid conflicts
 rm -rf "$OUT_DIR/IMAll.xcframework" || true
-xcodebuild -create-xcframework "${args[@]}" -output "$OUT_DIR/IMAll.xcframework"
-echo "IMAll.xcframework generated at $OUT_DIR/IMAll.xcframework"
+xcodebuild -create-xcframework "${args[@]}" -output "$OUT_DIR/IM.xcframework"
+echo "IM.xcframework generated at $OUT_DIR/IM.xcframework"

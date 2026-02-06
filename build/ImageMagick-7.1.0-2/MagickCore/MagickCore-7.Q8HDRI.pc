@@ -1,8 +1,8 @@
-prefix=/Users/macbookpro2022m2/Desktop/imagemagick_lib_ios/target/imagemagick_mac-arm64
+prefix=/Users/macbookpro2022m2/Desktop/imagemagick_lib_ios/target/imagemagick_mac-x86_64
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include/ImageMagick-7
-includearchdir=/Users/macbookpro2022m2/Desktop/imagemagick_lib_ios/target/imagemagick_mac-arm64/include/ImageMagick-7
+includearchdir=/Users/macbookpro2022m2/Desktop/imagemagick_lib_ios/target/imagemagick_mac-x86_64/include/ImageMagick-7
 libname=MagickCore-7.Q8HDRI
 moduledir=${exec_prefix}/lib/ImageMagick-7.1.0/modules-Q8HDRI
  
@@ -12,4 +12,4 @@ URL: https://github.com/ImageMagick
 Version: 7.1.0
 Cflags: -I${includearchdir} -I${includedir} -DMAGICKCORE_HDRI_ENABLE=1 -DMAGICKCORE_QUANTUM_DEPTH=8
 Libs: -L${libdir} -l${libname}
-Libs.private: -L${libdir} -l${libname} -L/Users/macbookpro2022m2/Desktop/imagemagick_lib_ios/target/libfreetype_mac-arm64/lib -lfreetype -L/Users/macbookpro2022m2/Desktop/imagemagick_lib_ios/target/libpng_mac-arm64/lib -lpng16 -L/Users/macbookpro2022m2/Desktop/imagemagick_lib_ios/target/libwebp_mac-arm64/lib -lwebp -L/opt/homebrew/Cellar/fontconfig/2.17.1/lib -lfontconfig -L/Users/macbookpro2022m2/Desktop/imagemagick_lib_ios/target/expat_mac-arm64/lib -lexpat     -L/Users/macbookpro2022m2/Desktop/imagemagick_lib_ios/target/libfreetype_mac-arm64/lib -lfreetype  -ljpeg    -L/Users/macbookpro2022m2/Desktop/imagemagick_lib_ios/target/libpng_mac-arm64/lib -lpng16      -L/opt/homebrew/Cellar/fontconfig/2.17.1/lib -lfontconfig  -L/Users/macbookpro2022m2/Desktop/imagemagick_lib_ios/target/libwebp_mac-arm64/lib -lwebpmux -lwebpdemux -L/Users/macbookpro2022m2/Desktop/imagemagick_lib_ios/target/libwebp_mac-arm64/lib -lwebp              -lxml2  -lz     -lm    -lpthread   -lm
+Libs.private: -L${libdir} -l${libname} -L/Users/macbookpro2022m2/Desktop/imagemagick_lib_ios/target/libfreetype_mac-x86_64/lib -lfreetype -L/Users/macbookpro2022m2/Desktop/imagemagick_lib_ios/target/libpng_mac-x86_64/lib -lpng16 -L/Users/macbookpro2022m2/Desktop/imagemagick_lib_ios/target/libwebp_mac-x86_64/lib -lwebp -L/opt/homebrew/Cellar/fontconfig/2.17.1/lib -lfontconfig -L/Users/macbookpro2022m2/Desktop/imagemagick_lib_ios/target/expat_mac-x86_64/lib -lexpat     -L/Users/macbookpro2022m2/Desktop/imagemagick_lib_ios/target/libfreetype_mac-x86_64/lib -lfreetype  -ljpeg    -L/Users/macbookpro2022m2/Desktop/imagemagick_lib_ios/target/libpng_mac-x86_64/lib -lpng16      -L/opt/homebrew/Cellar/fontconfig/2.17.1/lib -lfontconfig  -L/Users/macbookpro2022m2/Desktop/imagemagick_lib_ios/target/libwebp_mac-x86_64/lib -lwebpmux -lwebpdemux -L/Users/macbookpro2022m2/Desktop/imagemagick_lib_ios/target/libwebp_mac-x86_64/lib -lwebp              -lxml2  -lz     -lm    -lpthread   -lm

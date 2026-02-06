@@ -211,6 +211,39 @@ im () {
 		    CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" CPPFLAGS="$CPPFLAGS" LIBS="$LIBS"
 		im_compile
 		restore
+	elif [ "$1" == "mac-x86_64" ]; then
+		save
+		macx86flags
+		export PKG_CONFIG_PATH="${PNG_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/:${WEBP_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/:${FREETYPE_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/:${FONTCONFIG_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/:${EXPAT_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/"
+		export CPPFLAGS="-I$LIB_DIR/include/jpeg -I$LIB_DIR/include/png -I$LIB_DIR/include/webp -I$IM_LIB_DIR/include/ImageMagick-7 -I$LIB_DIR/include/fontconfig -I$LIB_DIR/include/expat"
+		export LDFLAGS="$LDFLAGS -L$LIB_DIR/jpeg_${BUILDINGFOR}_dylib/ -L${LIB_DIR}/png_${BUILDINGFOR}_dylib/ -L$LIB_DIR/webp_${BUILDINGFOR}_dylib/ -L$LIB_DIR/fontconfig_${BUILDINGFOR}_dylib/ -L$LIB_DIR/expat_${BUILDINGFOR}_dylib/"
+		export LIBS="$(pkg-config --libs freetype2) $(pkg-config --libs libpng16) $(pkg-config --libs libwebp) $(pkg-config --libs fontconfig) $(pkg-config --libs expat) $LIBS"
+		echo "[|- CONFIG $BUILDINGFOR]"
+		try ./configure \
+		    --prefix=${IM_LIB_DIR}_${BUILDINGFOR} \
+		    --disable-opencl \
+		    --disable-largefile \
+		    --with-quantum-depth=8 \
+		    --with-magick-plus-plus \
+		    --with-png \
+		    --with-freetype \
+		    --with-fontconfig \
+		    --with-xml \
+		    --with-webp \
+		    --without-perl \
+		    --without-x \
+		    --disable-shared \
+		    --disable-openmp \
+		    --without-bzlib \
+		    --without-openexr \
+		    --without-lcms \
+		    --without-lzma \
+		    --without-openjp2 \
+		    --without-zip \
+		    --host=${MAC_HOST_TRIPLE} \
+		    CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" CPPFLAGS="$CPPFLAGS" LIBS="$LIBS"
+		im_compile
+		restore
 	else
 		echo "[ERR: Nothing to do for $1]"
 	fi
@@ -270,7 +303,13 @@ im () {
 	            try cp "$LIB_DIR/$LIBNAME_core.x86_64" "$LIB_DIR/libMagickCore_x86.a"
 	        fi
 	        if [ -e "$LIB_DIR/$LIBNAME_core.mac-arm64" ]; then
-	            try cp "$LIB_DIR/$LIBNAME_core.mac-arm64" "$LIB_DIR/libMagickCore_mac.a"
+	            mac_arm="$LIB_DIR/$LIBNAME_core.mac-arm64"
+	            mac_x86="$LIB_DIR/$LIBNAME_core.mac-x86_64"
+	            if [ -e "$mac_x86" ]; then
+	                try lipo -create -output "$LIB_DIR/libMagickCore_mac.a" "$mac_arm" "$mac_x86"
+	            else
+	                try cp "$mac_arm" "$LIB_DIR/libMagickCore_mac.a"
+	            fi
 	        fi
 	    fi
 
@@ -328,7 +367,13 @@ im () {
 	            try cp "$LIB_DIR/$LIBNAME_wand.x86_64" "$LIB_DIR/libMagickWand_x86.a"
 	        fi
 	        if [ -e "$LIB_DIR/$LIBNAME_wand.mac-arm64" ]; then
-	            try cp "$LIB_DIR/$LIBNAME_wand.mac-arm64" "$LIB_DIR/libMagickWand_mac.a"
+	            mac_arm="$LIB_DIR/$LIBNAME_wand.mac-arm64"
+	            mac_x86="$LIB_DIR/$LIBNAME_wand.mac-x86_64"
+	            if [ -e "$mac_x86" ]; then
+	                try lipo -create -output "$LIB_DIR/libMagickWand_mac.a" "$mac_arm" "$mac_x86"
+	            else
+	                try cp "$mac_arm" "$LIB_DIR/libMagickWand_mac.a"
+	            fi
 	        fi
 	    fi
 
@@ -383,7 +428,13 @@ im () {
 	            try cp "$LIB_DIR/$LIBNAME_magickpp.x86_64" "$LIB_DIR/libMagick++_x86.a"
 	        fi
 	        if [ -e "$LIB_DIR/$LIBNAME_magickpp.mac-arm64" ]; then
-	            try cp "$LIB_DIR/$LIBNAME_magickpp.mac-arm64" "$LIB_DIR/libMagick++_mac.a"
+	            mac_arm="$LIB_DIR/$LIBNAME_magickpp.mac-arm64"
+	            mac_x86="$LIB_DIR/$LIBNAME_magickpp.mac-x86_64"
+	            if [ -e "$mac_x86" ]; then
+	                try lipo -create -output "$LIB_DIR/libMagick++_mac.a" "$mac_arm" "$mac_x86"
+	            else
+	                try cp "$mac_arm" "$LIB_DIR/libMagick++_mac.a"
+	            fi
 	        fi
 	    fi
 }

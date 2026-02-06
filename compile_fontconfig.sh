@@ -131,6 +131,24 @@ fontconfig () {
         CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
         fontconfig_compile
         restore
+    elif [ "$1" == "mac-x86_64" ]; then
+        save
+        macx86flags
+        echo "[|- CONFIG $BUILDINGFOR]"
+        if [ -f Makefile ]; then
+            try make distclean
+        fi
+        autoreconf -f -i || true
+        export PKG_CONFIG_PATH="${FREETYPE_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/:${EXPAT_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/:$PKG_CONFIG_PATH"
+        export LDFLAGS="$LDFLAGS -L${FREETYPE_LIB_DIR}_${BUILDINGFOR}/lib -L${PNG_LIB_DIR}_${BUILDINGFOR}/lib -L${EXPAT_LIB_DIR}_${BUILDINGFOR}/lib"
+        try ./configure \
+        --prefix=${FONTCONFIG_LIB_DIR}_${BUILDINGFOR} \
+        --enable-shared \
+        --enable-static \
+        --host=${MAC_HOST_TRIPLE} \
+        CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
+        fontconfig_compile
+        restore
     else
         echo "[ERR: Nothing to do for $1]"
     fi
@@ -185,8 +203,14 @@ fontconfig () {
         if [ -e "$LIB_DIR/libfontconfig.a.x86_64" ]; then
             try cp "$LIB_DIR/libfontconfig.a.x86_64" "$LIB_DIR/libfontconfig_x86.a"
         fi
-        if [ -e "$LIB_DIR/libfontconfig.a.mac-arm64" ]; then
-            try cp "$LIB_DIR/libfontconfig.a.mac-arm64" "$LIB_DIR/libfontconfig_mac.a"
+        mac_arm="$LIB_DIR/libfontconfig.a.mac-arm64"
+        mac_x86="$LIB_DIR/libfontconfig.a.mac-x86_64"
+        if [ -e "$mac_arm" ] && [ -e "$mac_x86" ]; then
+            try lipo -create -output "$LIB_DIR/libfontconfig_mac.a" "$mac_arm" "$mac_x86"
+        elif [ -e "$mac_arm" ]; then
+            try cp "$mac_arm" "$LIB_DIR/libfontconfig_mac.a"
+        elif [ -e "$mac_x86" ]; then
+            try cp "$mac_x86" "$LIB_DIR/libfontconfig_mac.a"
         fi
     fi
 }
