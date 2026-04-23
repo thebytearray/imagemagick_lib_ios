@@ -2,15 +2,16 @@
 
 de265_compile() {
 	echo "[|- MAKE libde265 $BUILDINGFOR]"
-	try make -j$CORESNUM
-	try make install
+	# Build only the library: tools/ use system(3), unavailable on iOS (see rd-curves.cc).
+	try make -C libde265 -j$CORESNUM
+	try make -C libde265 install
 	try cp "${DE265_LIB_DIR}_${BUILDINGFOR}/lib/libde265.a" "$LIB_DIR/libde265.a.$BUILDINGFOR"
 	first=$(echo "$ARCHS" | awk '{print $1;}')
 	if [ "$BUILDINGFOR" == "$first" ]; then
 		try mkdir -p "$LIB_DIR/include/libde265"
 		try cp -r "${DE265_LIB_DIR}_${BUILDINGFOR}/include/." "$LIB_DIR/include/libde265/"
 	fi
-	try make distclean
+	try make -C libde265 distclean
 }
 
 _de265_host() {

@@ -1,0 +1,13 @@
+prefix=/Users/batman/Desktop/imGickiOS/imagemagick_lib_ios/target/libde265_arm64-sim
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: libde265
+Description: H.265/HEVC video decoder.
+URL: https://github.com/strukturag/libde265
+Version: 1.0.15
+Requires:
+Libs: -lde265 -L${libdir}
+Libs.private: @LIBS_PRIVATE@
+Cflags: -I${includedir}

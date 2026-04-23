@@ -4,6 +4,11 @@ heif_compile() {
 	local p="${HEIF_LIB_DIR}_${BUILDINGFOR}"
 	local dp="${DE265_LIB_DIR}_${BUILDINGFOR}"
 	local ap="${AOM_LIB_DIR}_${BUILDINGFOR}"
+	local jp="${JPEG_LIB_DIR}_${BUILDINGFOR}"
+	local pp="${PNG_LIB_DIR}_${BUILDINGFOR}"
+	local tp="${TIFF_LIB_DIR}_${BUILDINGFOR}"
+	local wp="${WEBP_LIB_DIR}_${BUILDINGFOR}"
+	local _pfx="${dp};${ap};${jp};${pp};${tp};${wp}"
 	echo "[|- CMAKE libheif $BUILDINGFOR"
 	im_ios_delegate_cmake_base "$1"
 	rm -rf _heifbuild
@@ -13,10 +18,16 @@ heif_compile() {
 		try cmake "$HEIF_DIR" \
 			-DCMAKE_INSTALL_PREFIX="$p" \
 			"${_IM_CMAKE_OPTS[@]}" \
-			-DCMAKE_PREFIX_PATH="$dp;$ap" \
+			-DCMAKE_PREFIX_PATH="${_pfx}" \
+			-DCMAKE_IGNORE_PREFIX_PATH="/opt/homebrew;/usr/local" \
 			-DWITH_LIBDE265=ON \
 			-DWITH_AOM_DECODER=ON \
 			-DWITH_AOM_ENCODER=ON \
+			-DWITH_X265=OFF \
+			-DWITH_LIBSHARPYUV=OFF \
+			-DWITH_EXAMPLES=OFF \
+			-DBUILD_TESTING=OFF \
+			-DWITH_GDK_PIXBUF=OFF \
 			-DBUILD_SHARED_LIBS=OFF \
 			-DBUILD_STATIC_LIBS=ON \
 			-DENABLE_PLUGIN_LOADING=OFF
