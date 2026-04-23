@@ -2,15 +2,21 @@
 
 # xz 5.2.x: Make may run autoconf / automake-1.15 / aclocal if shipped outputs look stale. CI has none of these.
 # Dependency chain: m4 + configure.ac → aclocal.m4 → configure, Makefile.in, config.h.in (see Makefile.in rules).
-# Set inputs to a fixed old time, then touch aclocal.m4 slightly newer, then touch shipped outputs to "now" together.
+# Use layered *past* mtimes only: touching configure to "now" makes it newer than config.status and triggers
+# ./config.status --recheck (fails / wrong env). Generated config.status + Makefile must stay newest.
 _lzma_freeze_autotools() {
 	[ -f Makefile.in ] && [ -f configure ] && [ -f aclocal.m4 ] || return 0
 	local ancient=200001010000
 	local mid=200001010001
+	local outs=200001010002
 	touch -t "$ancient" Makefile.am configure.ac 2>/dev/null || true
 	[ -d m4 ] && find m4 -type f -exec touch -t "$ancient" {} + 2>/dev/null || true
 	touch -t "$mid" aclocal.m4
-	touch configure Makefile.in config.h.in aclocal.m4 2>/dev/null || true
+	if [ -f config.h.in ]; then
+		touch -t "$outs" configure Makefile.in config.h.in aclocal.m4
+	else
+		touch -t "$outs" configure Makefile.in aclocal.m4
+	fi
 }
 
 _lzma_configure() {
