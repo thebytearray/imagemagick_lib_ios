@@ -58,6 +58,12 @@ jobs:
           brew install make
           echo "$(brew --prefix make)/libexec/gnubin" >> "$GITHUB_PATH"
 
+      # ICU 64 configure runs Python against distutils (removed in Python 3.12+).
+      - name: Install Python 3.11 for ICU4C configure
+        run: |
+          brew install python@3.11
+          echo "$(brew --prefix python@3.11)/bin" >> "$GITHUB_PATH"
+
       - name: Build libraries and IMPORT_ME
         id: build_im
         env:

@@ -16,6 +16,40 @@ _icu_gnu_make() {
 	exit 1
 }
 
+# ICU 64 configure runs Python that imports distutils (removed in Python 3.12+).
+_icu_python() {
+	local _p
+	if [ -n "${ICU_PYTHON:-}" ]; then
+		_p="$ICU_PYTHON"
+		if [ ! -x "$_p" ]; then
+			_p="$(command -v "$ICU_PYTHON" 2>/dev/null || true)"
+		fi
+		if [ -z "$_p" ] || [ ! -x "$_p" ]; then
+			echo "[ERR] ICU_PYTHON not executable: ${ICU_PYTHON}" >&2
+			exit 1
+		fi
+		if ! "$_p" -c "import distutils.sysconfig" 2>/dev/null; then
+			echo "[ERR] ICU_PYTHON must be Python 3.11 or older (stdlib distutils). Got: $_p" >&2
+			exit 1
+		fi
+		printf '%s\n' "$_p"
+		return 0
+	fi
+	local cand
+	for cand in python3.11 python3.10 python3.9; do
+		if command -v "$cand" >/dev/null 2>&1 && "$cand" -c "import distutils.sysconfig" 2>/dev/null; then
+			command -v "$cand"
+			return 0
+		fi
+	done
+	if command -v python3 >/dev/null 2>&1 && python3 -c "import distutils.sysconfig" 2>/dev/null; then
+		command -v python3
+		return 0
+	fi
+	echo "[ERR] ICU4C configure needs Python with distutils (3.12+ removed it). Try: brew install python@3.11, or set ICU_PYTHON=/path/to/python3.11" >&2
+	exit 1
+}
+
 icu_compile() {
 	echo "[|- MAKE ICU $BUILDINGFOR]"
 	try "$ICU_MAKE" -j"$CORESNUM"
@@ -63,6 +97,7 @@ _ensure_icu_host_tools() {
 		cd "$host_bld" || exit 1
 		export MAKE="$ICU_MAKE"
 		export U_MAKE="$ICU_MAKE"
+		export PYTHON="$ICU_PY"
 		if [ -x "$icu_src/runConfigureICU" ]; then
 			try "$icu_src/runConfigureICU" MacOSX
 		else
@@ -75,6 +110,9 @@ _ensure_icu_host_tools() {
 icu() {
 	echo "[+ ICU4C: $1]"
 	export ICU_MAKE="$(_icu_gnu_make)"
+	export ICU_PY="$(_icu_python)"
+	export PYTHON="$ICU_PY"
+	echo "[| ICU using PYTHON=$ICU_PY ($("$ICU_PY" --version 2>&1 | head -n1))]"
 	_ensure_icu_host_tools
 	local host_bld="${BUILDROOT}/icu-host-bld"
 	export ICU_TARGET_BLD="${BUILDROOT}/icu-target-$1-bld"
@@ -85,6 +123,7 @@ icu() {
 		cd "$ICU_TARGET_BLD" || exit 1
 		export MAKE="$ICU_MAKE"
 		export U_MAKE="$ICU_MAKE"
+		export PYTHON="$ICU_PY"
 		try "$ICU_DIR/configure" \
 			--host="$(_icu_host)" \
 			--with-cross-build="$host_bld" \
