@@ -30,7 +30,8 @@ heif_compile() {
 			-DWITH_GDK_PIXBUF=OFF \
 			-DBUILD_SHARED_LIBS=OFF \
 			-DBUILD_STATIC_LIBS=ON \
-			-DENABLE_PLUGIN_LOADING=OFF
+			-DENABLE_PLUGIN_LOADING=OFF \
+			-DCMAKE_DISABLE_FIND_PACKAGE_Doxygen=ON
 		try cmake --build . --parallel "${CORESNUM:-4}"
 		try cmake --install .
 	)

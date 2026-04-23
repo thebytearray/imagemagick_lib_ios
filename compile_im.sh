@@ -47,7 +47,7 @@ _im_delegate_exports() {
 	if [ "${ENABLE_HEIF:-1}" = "1" ]; then
 		export CPPFLAGS="${CPPFLAGS} -I$LIB_DIR/include/libheif"
 	fi
-	export LDFLAGS="$LDFLAGS -L$LIB_DIR/jpeg_${a}_dylib/ -L${LIB_DIR}/png_${a}_dylib/ -L$LIB_DIR/webp_${a}_dylib/ -L$LIB_DIR/tiff_${a}_dylib/ -L$LIB_DIR/fontconfig_${a}_dylib/ -L$LIB_DIR/expat_${a}_dylib/ -L${ZLIB_LIB_DIR}_${a}/lib -L${ICONV_LIB_DIR}_${a}/lib -L${XML2_LIB_DIR}_${a}/lib -L${FFTW_LIB_DIR}_${a}/lib -L${LZMA_LIB_DIR}_${a}/lib -L${LCMS2_LIB_DIR}_${a}/lib -L${OPENJPEG_LIB_DIR}_${a}/lib"
+	export LDFLAGS="$LDFLAGS -L${JPEG_LIB_DIR}_${a}/lib -L$LIB_DIR/jpeg_${a}_dylib/ -L${PNG_LIB_DIR}_${a}/lib -L${LIB_DIR}/png_${a}_dylib/ -L${WEBP_LIB_DIR}_${a}/lib -L$LIB_DIR/webp_${a}_dylib/ -L${TIFF_LIB_DIR}_${a}/lib -L$LIB_DIR/tiff_${a}_dylib/ -L$LIB_DIR/fontconfig_${a}_dylib/ -L$LIB_DIR/expat_${a}_dylib/ -L${ZLIB_LIB_DIR}_${a}/lib -L${ICONV_LIB_DIR}_${a}/lib -L${XML2_LIB_DIR}_${a}/lib -L${FFTW_LIB_DIR}_${a}/lib -L${LZMA_LIB_DIR}_${a}/lib -L${LCMS2_LIB_DIR}_${a}/lib -L${OPENJPEG_LIB_DIR}_${a}/lib"
 	if [ "${ENABLE_ICU:-1}" = "1" ]; then
 		export LDFLAGS="${LDFLAGS} -L${ICU_LIB_DIR}_${a}/lib"
 	fi
@@ -56,7 +56,8 @@ _im_delegate_exports() {
 	fi
 	local _heif_libs=""
 	if [ "${ENABLE_HEIF:-1}" = "1" ]; then
-		_heif_libs=" $(pkg-config --libs libheif 2>/dev/null || echo '-lheif -lde265 -laom') -lc++"
+		# Static libheif: pull in libde265 + libaom explicitly (pkg-config often omits private deps).
+		_heif_libs=" -lheif -lde265 -laom -lc++"
 	fi
 	# Static link: libxml2 built with ICU leaves ICU symbols unresolved until ICU libs follow -lxml2.
 	local _icu_libs=""
@@ -83,7 +84,6 @@ im () {
     if [ "$1" == "arm64-sim" ]; then
         save
         armsimflags
-        export CC="$(xcode-select -print-path)/usr/bin/gcc"
         _im_delegate_exports "$1"
 
         echo "[|- CONFIG $BUILDINGFOR]"
@@ -107,6 +107,7 @@ im () {
             --disable-openmp \
             --with-bzlib=yes \
             --without-openexr \
+            --without-zstd \
             --with-lcms=yes \
             --with-lzma=yes \
             --with-openjp2=yes \
@@ -151,6 +152,7 @@ im () {
             --disable-openmp \
             --with-bzlib=yes \
             --without-openexr \
+            --without-zstd \
             --with-lcms=yes \
             --with-lzma=yes \
             --with-openjp2=yes \
@@ -196,6 +198,7 @@ im () {
             --disable-openmp \
             --with-bzlib=yes \
             --without-openexr \
+            --without-zstd \
             --with-lcms=yes \
             --with-lzma=yes \
             --with-openjp2=yes \
@@ -230,6 +233,7 @@ im () {
 		    --disable-openmp \
 		    --with-bzlib=yes \
 		    --without-openexr \
+		    --without-zstd \
 		    --with-lcms=yes \
 		    --with-lzma=yes \
 		    --with-openjp2=yes \
@@ -264,6 +268,7 @@ im () {
 		    --disable-openmp \
 		    --with-bzlib=yes \
 		    --without-openexr \
+		    --without-zstd \
 		    --with-lcms=yes \
 		    --with-lzma=yes \
 		    --with-openjp2=yes \

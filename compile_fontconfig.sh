@@ -3,7 +3,7 @@
 fontconfig_compile() {
     echo "[|- MAKE $BUILDINGFOR]"
     try make -j$CORESNUM
-    try make install-exec
+    try make install
     mkdir -p ${FONTCONFIG_LIB_DIR}_${BUILDINGFOR}/etc/fonts
     if [ -f ./fonts.conf ]; then
         try cp ./fonts.conf ${FONTCONFIG_LIB_DIR}_${BUILDINGFOR}/etc/fonts/fonts.conf
@@ -19,9 +19,10 @@ fontconfig_compile() {
     
 	if [ "$BUILDINGFOR" == "$first" ]; then
 		echo "[|- CP include files (arch ref: $first)]"
-		# copy the include files
 		mkdir -p $LIB_DIR/include/fontconfig
-		try cp -r ${FONTCONFIG_LIB_DIR}_${BUILDINGFOR}/include/fontconfig*/ $LIB_DIR/include/fontconfig/
+		if [ -d "${FONTCONFIG_LIB_DIR}_${BUILDINGFOR}/include/fontconfig" ]; then
+			try cp -r "${FONTCONFIG_LIB_DIR}_${BUILDINGFOR}/include/fontconfig/." "$LIB_DIR/include/fontconfig/"
+		fi
 	fi
     echo "[|- CLEAN $BUILDINGFOR]"
     if [ -f Makefile ]; then
