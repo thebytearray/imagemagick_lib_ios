@@ -1,7 +1,28 @@
 #!/bin/bash
 
+# xz 5.2.x Makefiles may try to regenerate aclocal.m4 (needs automake 1.15) if m4/*.m4
+# mtimes are newer than aclocal.m4 — common on CI after configure. Force aclocal.m4 "fresh".
+_lzma_stamp_aclocal() {
+	# Makefile depends on aclocal.m4 newer than m4/*.m4 and configure.ac; otherwise make runs aclocal-1.15.
+	if [ -f aclocal.m4 ]; then
+		[ -d m4 ] && find m4 -type f -exec touch -r aclocal.m4 {} + 2>/dev/null || true
+		[ -f configure.ac ] && touch -r aclocal.m4 configure.ac 2>/dev/null || true
+		touch aclocal.m4
+	fi
+}
+
+_lzma_configure() {
+	local _host="$1"
+	try ./configure --prefix="${LZMA_LIB_DIR}_${BUILDINGFOR}" --disable-debug --disable-dependency-tracking \
+		--enable-static --disable-shared --host="$_host" \
+		--disable-nls \
+		--disable-xz --disable-xzdec --disable-lzmadec --disable-lzmainfo --disable-lzma-links --disable-scripts
+	_lzma_stamp_aclocal
+}
+
 lzma_compile() {
 	echo "[|- MAKE lzma $BUILDINGFOR]"
+	_lzma_stamp_aclocal
 	try make -j$CORESNUM
 	try make install
 	echo "[|- CP STATIC $BUILDINGFOR]"
@@ -36,8 +57,7 @@ lzma() {
 		armsimflags
 		echo "[|- CONFIG $BUILDINGFOR]"
 		export CC="$(xcode-select -print-path)/usr/bin/gcc"
-		try ./configure --prefix="${LZMA_LIB_DIR}_${BUILDINGFOR}" --disable-debug --disable-dependency-tracking \
-			--enable-static --disable-shared --host="$(_lzma_host)"
+		_lzma_configure "$(_lzma_host)"
 		lzma_compile
 		restore
 	elif [ "$1" == "armv7" ] || [ "$1" == "armv7s" ] || [ "$1" == "arm64" ]; then
@@ -45,8 +65,7 @@ lzma() {
 		armflags "$1"
 		echo "[|- CONFIG $BUILDINGFOR]"
 		export CC="$(xcode-select -print-path)/usr/bin/gcc"
-		try ./configure --prefix="${LZMA_LIB_DIR}_${BUILDINGFOR}" --disable-debug --disable-dependency-tracking \
-			--enable-static --disable-shared --host="$(_lzma_host)"
+		_lzma_configure "$(_lzma_host)"
 		lzma_compile
 		restore
 	elif [ "$1" == "i386" ] || [ "$1" == "x86_64" ]; then
@@ -54,24 +73,21 @@ lzma() {
 		intelflags "$1"
 		export CC="$(xcode-select -print-path)/usr/bin/gcc"
 		echo "[|- CONFIG $BUILDINGFOR]"
-		try ./configure --prefix="${LZMA_LIB_DIR}_${BUILDINGFOR}" --disable-debug --disable-dependency-tracking \
-			--enable-static --disable-shared --host="$(_lzma_host)"
+		_lzma_configure "$(_lzma_host)"
 		lzma_compile
 		restore
 	elif [ "$1" == "mac-arm64" ]; then
 		save
 		macflags "$1"
 		echo "[|- CONFIG $BUILDINGFOR]"
-		try ./configure --prefix="${LZMA_LIB_DIR}_${BUILDINGFOR}" --disable-debug --disable-dependency-tracking \
-			--enable-static --disable-shared --host="${MAC_HOST_TRIPLE}"
+		_lzma_configure "${MAC_HOST_TRIPLE}"
 		lzma_compile
 		restore
 	elif [ "$1" == "mac-x86_64" ]; then
 		save
 		macx86flags
 		echo "[|- CONFIG $BUILDINGFOR]"
-		try ./configure --prefix="${LZMA_LIB_DIR}_${BUILDINGFOR}" --disable-debug --disable-dependency-tracking \
-			--enable-static --disable-shared --host="${MAC_HOST_TRIPLE}"
+		_lzma_configure "${MAC_HOST_TRIPLE}"
 		lzma_compile
 		restore
 	else
