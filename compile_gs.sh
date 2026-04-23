@@ -1,18 +1,19 @@
 #!/bin/bash
 
 ghostscript_compile() {
+    local ghostscript_LIB_DIR="${GS_LIB_DIR}_${BUILDINGFOR}"
+    mkdir -p "$LIB_DIR/ghostscript_${BUILDINGFOR}_dylib"
     echo "[|- MAKE ghostscript $BUILDINGFOR]"
     try make so -j$CORESNUM
     try make install
     echo "[|- CP STATIC/DYLIB $BUILDINGFOR]"
-    try cp $ghostscript_LIB_DIR/lib/$LIBPATH_ghostscript $LIB_DIR/libghostscript.a.$BUILDINGFOR
-    try cp $ghostscript_LIB_DIR/lib/$LIBPATH_ghostscript_dylib $LIB_DIR/ghostscript_${BUILDINGFOR}_dylib/libghostscript.dylib
+    try cp "$ghostscript_LIB_DIR/lib/$LIBPATH_ghostscript" "$LIB_DIR/libghostscript.a.$BUILDINGFOR"
+    try cp "$ghostscript_LIB_DIR/lib/$LIBPATH_ghostscript_dylib" "$LIB_DIR/ghostscript_${BUILDINGFOR}_dylib/libghostscript.dylib"
     first=`echo $ARCHS | awk '{print $1;}'`
     
     if [ "$BUILDINGFOR" == "$first" ]; then
         echo "[|- CP include files (arch ref: $first)]"
-        # copy the include files
-        try cp -r $ghostscript_LIB_DIR/include/libghostscript*/ $LIB_DIR/include/ghostscript/
+        try cp -r "$ghostscript_LIB_DIR"/include/libghostscript*/* "$LIB_DIR/include/ghostscript/" 2>/dev/null || try cp -r "$ghostscript_LIB_DIR/include/"* "$LIB_DIR/include/ghostscript/" 2>/dev/null || true
     fi
     echo "[|- CLEAN $BUILDINGFOR]"
     try make distclean
@@ -33,7 +34,7 @@ ghostscript () {
         echo "[|- CONFIG $BUILDINGFOR]"
         export CC="$(xcode-select -print-path)/usr/bin/gcc" # override clang
         try ./configure \
-        --prefix=${PNG_LIB_DIR}_${BUILDINGFOR} \
+        --prefix="${GS_LIB_DIR}_${BUILDINGFOR}" \
         --enable-shared \
         --enable-static \
         --disable-cups  \
@@ -47,7 +48,7 @@ ghostscript () {
         echo "[|- CONFIG $BUILDINGFOR]"
         export CC="$(xcode-select -print-path)/usr/bin/gcc" # override clang
         try ./configure \
-        --prefix=${PNG_LIB_DIR}_${BUILDINGFOR} \
+        --prefix="${GS_LIB_DIR}_${BUILDINGFOR}" \
         --enable-shared \
         --enable-static \
         --host=${BUILDINGFOR}-apple-darwin

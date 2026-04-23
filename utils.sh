@@ -23,13 +23,20 @@ try () {
 # Prepares the directory structure needed for the compilation and any additional
 # requirement
 prepare() {
-	# ImageMagick requires crt_externals.h, that doesn't
-	# exist for the iPhone - Just copying it make things compile/work
-	if [ -e $IOSSDKROOT/usr/include/crt_externs.h ]; then
-		:;
-	else
-		echo "[INFO] need to copy crt_externals.h for compilation, please enter sudo password"
-		sudo ln -s "$SIMSDKROOT/usr/include/crt_externs.h" "$IOSSDKROOT/usr/include/crt_externs.h"
+	# ImageMagick expects crt_externs.h when targeting iOS; use a writable include dir (no sudo — CI-safe).
+	export IOS_SDK_EXTRAS_INCLUDE="$LIB_DIR/include/ios_sdk_extras"
+	mkdir -p "$IOS_SDK_EXTRAS_INCLUDE"
+	if [ ! -f "$IOS_SDK_EXTRAS_INCLUDE/crt_externs.h" ]; then
+		if [ -f "${IOSSDKROOT:-}/usr/include/crt_externs.h" ]; then
+			cp "${IOSSDKROOT}/usr/include/crt_externs.h" "$IOS_SDK_EXTRAS_INCLUDE/"
+		elif [ -f "${SIMSDKROOT:-}/usr/include/crt_externs.h" ]; then
+			cp "${SIMSDKROOT}/usr/include/crt_externs.h" "$IOS_SDK_EXTRAS_INCLUDE/"
+		else
+			_macsdk="$(xcrun --sdk macosx --show-sdk-path 2>/dev/null || true)"
+			if [ -n "$_macsdk" ] && [ -f "$_macsdk/usr/include/crt_externs.h" ]; then
+				cp "$_macsdk/usr/include/crt_externs.h" "$IOS_SDK_EXTRAS_INCLUDE/"
+			fi
+		fi
 	fi
 	
 	# Check if IMDelegates is inside the IM directory or link it
@@ -54,10 +61,31 @@ prepare() {
 	mkdir -p $LIB_DIR/include/fontconfig
 	mkdir -p $LIB_DIR/include/freetype
 	mkdir -p $LIB_DIR/include/ghostscript
+	mkdir -p $LIB_DIR/include/lzma
+	mkdir -p $LIB_DIR/include/lcms2
+	mkdir -p $LIB_DIR/include/openjp2
+	mkdir -p $LIB_DIR/include/bzlib
+	mkdir -p $LIB_DIR/include/zlib
+	mkdir -p $LIB_DIR/include/iconv
+	mkdir -p $LIB_DIR/include/libxml2
+	mkdir -p $LIB_DIR/include/fftw
+	mkdir -p $LIB_DIR/include/libheif
 	# lib directories
+	mkdir -p $ZLIB_LIB_DIR
+	mkdir -p $ICONV_LIB_DIR
+	mkdir -p $ICU_LIB_DIR
+	mkdir -p $XML2_LIB_DIR
+	mkdir -p $FFTW_LIB_DIR
+	mkdir -p $DE265_LIB_DIR
+	mkdir -p $AOM_LIB_DIR
+	mkdir -p $HEIF_LIB_DIR
 	mkdir -p $JPEG_LIB_DIR
 	mkdir -p $PNG_LIB_DIR
 	mkdir -p $TIFF_LIB_DIR
+	mkdir -p $LZMA_LIB_DIR
+	mkdir -p $LCMS2_LIB_DIR
+	mkdir -p $BZIP2_LIB_DIR
+	mkdir -p $OPENJPEG_LIB_DIR
 	# DYLIB directories
 	for i in "jpeg" "png" "tiff" "webp"; do
 		for j in $ARCHS; do

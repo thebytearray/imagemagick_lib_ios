@@ -172,6 +172,7 @@ if [[ "$PACK_MAC_SPLIT" == 1 && ( "$PACK_PLATFORMS" == mac || "$PACK_PLATFORMS" 
 fi
 
 # cleanup previous output to avoid conflicts
-rm -rf "$OUT_DIR/IMAll.xcframework" || true
-xcodebuild -create-xcframework "${args[@]}" -output "$OUT_DIR/IM.xcframework"
-echo "IM.xcframework generated at $OUT_DIR/IM.xcframework"
+XCFRAMEWORK_NAME="${XCFRAMEWORK_NAME:-IMAll.xcframework}"
+rm -rf "$OUT_DIR/$XCFRAMEWORK_NAME" || true
+xcodebuild -create-xcframework "${args[@]}" -output "$OUT_DIR/$XCFRAMEWORK_NAME"
+echo "$XCFRAMEWORK_NAME generated at $OUT_DIR/$XCFRAMEWORK_NAME"

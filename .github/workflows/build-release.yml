@@ -1,0 +1,95 @@
+name: Build IMAll xcframework
+
+on:
+  workflow_dispatch:
+    inputs:
+      im_version:
+        description: Version folder under build/ImageMagick-*
+        type: string
+        default: "7.1.0-2"
+      archs:
+        description: Space-separated architectures (see all.sh)
+        type: string
+        default: "arm64 arm64-sim mac-arm64 mac-x86_64"
+      enable_icu:
+        description: Build ICU4C + libxml2 with ICU (Android parity; slower, needs more disk/CPU)
+        type: boolean
+        default: true
+      upload_release:
+        description: Create/update a GitHub Release with the zip asset
+        type: boolean
+        default: true
+      release_tag:
+        description: Release tag (empty = im-<im_version>)
+        type: string
+        default: ""
+  push:
+    tags:
+      - "im-*"
+      - "v*"
+
+jobs:
+  build:
+    runs-on: macos-14
+    timeout-minutes: 180
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve ImageMagick version
+        id: ver
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            t="${GITHUB_REF_NAME}"
+            if [[ "$t" == im-* ]]; then echo "imv=${t#im-}" >> "$GITHUB_OUTPUT"
+            elif [[ "$t" == v* ]]; then echo "imv=${t#v}" >> "$GITHUB_OUTPUT"
+            else echo "imv=$t" >> "$GITHUB_OUTPUT"; fi
+          else
+            echo "imv=${{ github.event.inputs.im_version }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Ensure delegate sources (manifest)
+        run: bash scripts/ensure-delegate-sources.sh "${{ steps.ver.outputs.imv }}"
+
+      - name: Build libraries and IMPORT_ME
+        env:
+          ARCHS: ${{ github.event.inputs.archs || 'arm64 arm64-sim mac-arm64 mac-x86_64' }}
+          BUILD_GHOSTSCRIPT: "0"
+          ENABLE_ICU: ${{ github.event.inputs.enable_icu != false && '1' || '0' }}
+        run: ./all.sh "${{ steps.ver.outputs.imv }}"
+
+      - name: Create IMAll.xcframework
+        run: |
+          bash scripts/make_xcframework.sh "$(pwd)/IMPORT_ME" "$(pwd)/IMPORT_ME" "$(pwd)/IMPORT_ME/include" ios+mac 0 0
+
+      - name: Zip bundle
+        run: |
+          cd IMPORT_ME
+          zip -rq "../IMAll-xcframework-${{ steps.ver.outputs.imv }}.zip" IMAll.xcframework include
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: IMAll-xcframework-${{ steps.ver.outputs.imv }}
+          path: IMAll-xcframework-${{ steps.ver.outputs.imv }}.zip
+
+      - name: Publish GitHub Release
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.upload_release }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.release_tag != '' && inputs.release_tag || format('im-{0}', steps.ver.outputs.imv) }}
+          name: IMAll xcframework ${{ steps.ver.outputs.imv }}
+          generate_release_notes: true
+          files: IMAll-xcframework-${{ steps.ver.outputs.imv }}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish release on tag push
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: IMAll xcframework ${{ steps.ver.outputs.imv }}
+          files: IMAll-xcframework-${{ steps.ver.outputs.imv }}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

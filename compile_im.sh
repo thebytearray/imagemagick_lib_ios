@@ -28,9 +28,48 @@ im_compile() {
     fi
 }
 
+# Shared delegates — aligned with Android-ImageMagick7 Application.mk (incl. zlib, iconv, xml2, fftw, heif stack when ENABLE_HEIF=1).
+_im_delegate_exports() {
+	local a="$1"
+	local crt=""
+	[ -n "${IOS_SDK_EXTRAS_INCLUDE:-}" ] && crt="-I${IOS_SDK_EXTRAS_INCLUDE}"
+	export PKG_CONFIG_PATH="${PNG_LIB_DIR}_${a}/lib/pkgconfig/:${JPEG_LIB_DIR}_${a}/lib/pkgconfig/:${TIFF_LIB_DIR}_${a}/lib/pkgconfig/:${WEBP_LIB_DIR}_${a}/lib/pkgconfig/:${LZMA_LIB_DIR}_${a}/lib/pkgconfig/:${LCMS2_LIB_DIR}_${a}/lib/pkgconfig/:${OPENJPEG_LIB_DIR}_${a}/lib/pkgconfig/:${FREETYPE_LIB_DIR}_${a}/lib/pkgconfig/:${FONTCONFIG_LIB_DIR}_${a}/lib/pkgconfig/:${EXPAT_LIB_DIR}_${a}/lib/pkgconfig/:${XML2_LIB_DIR}_${a}/lib/pkgconfig/:${FFTW_LIB_DIR}_${a}/lib/pkgconfig/"
+	if [ "${ENABLE_ICU:-1}" = "1" ]; then
+		export PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:${ICU_LIB_DIR}_${a}/lib/pkgconfig:"
+	fi
+	if [ "${ENABLE_HEIF:-1}" = "1" ]; then
+		export PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:${HEIF_LIB_DIR}_${a}/lib/pkgconfig:"
+	fi
+	export CPPFLAGS="${crt} -I$LIB_DIR/include/zlib -I$LIB_DIR/include/iconv -I$LIB_DIR/include/libxml2 -I$LIB_DIR/include/fftw -I$LIB_DIR/include/jpeg -I$LIB_DIR/include/png -I$LIB_DIR/include/webp -I$LIB_DIR/include/tiff -I$LIB_DIR/include/lzma -I$LIB_DIR/include/lcms2 -I$LIB_DIR/include/openjp2 -I$LIB_DIR/include/bzlib -I$IM_LIB_DIR/include/ImageMagick-7 -I$LIB_DIR/include/fontconfig -I$LIB_DIR/include/expat"
+	if [ "${ENABLE_ICU:-1}" = "1" ]; then
+		export CPPFLAGS="${CPPFLAGS} -I${ICU_LIB_DIR}_${a}/include"
+	fi
+	if [ "${ENABLE_HEIF:-1}" = "1" ]; then
+		export CPPFLAGS="${CPPFLAGS} -I$LIB_DIR/include/libheif"
+	fi
+	export LDFLAGS="$LDFLAGS -L$LIB_DIR/jpeg_${a}_dylib/ -L${LIB_DIR}/png_${a}_dylib/ -L$LIB_DIR/webp_${a}_dylib/ -L$LIB_DIR/tiff_${a}_dylib/ -L$LIB_DIR/fontconfig_${a}_dylib/ -L$LIB_DIR/expat_${a}_dylib/ -L${ZLIB_LIB_DIR}_${a}/lib -L${ICONV_LIB_DIR}_${a}/lib -L${XML2_LIB_DIR}_${a}/lib -L${FFTW_LIB_DIR}_${a}/lib -L${LZMA_LIB_DIR}_${a}/lib -L${LCMS2_LIB_DIR}_${a}/lib -L${OPENJPEG_LIB_DIR}_${a}/lib"
+	if [ "${ENABLE_ICU:-1}" = "1" ]; then
+		export LDFLAGS="${LDFLAGS} -L${ICU_LIB_DIR}_${a}/lib"
+	fi
+	if [ "${ENABLE_HEIF:-1}" = "1" ]; then
+		export LDFLAGS="${LDFLAGS} -L${HEIF_LIB_DIR}_${a}/lib -L${DE265_LIB_DIR}_${a}/lib -L${AOM_LIB_DIR}_${a}/lib"
+	fi
+	local _heif_libs=""
+	if [ "${ENABLE_HEIF:-1}" = "1" ]; then
+		_heif_libs=" $(pkg-config --libs libheif 2>/dev/null || echo '-lheif -lde265 -laom') -lc++"
+	fi
+	local _icu_libs=""
+	if [ "${ENABLE_ICU:-1}" = "1" ]; then
+		_icu_libs=" -licui18n -licuuc -licudata"
+	fi
+	export LIBS="${LIB_DIR}/libbz2.a.${a} -llzma -llcms2 -lopenjp2 -ltiff -ljpeg -lz -liconv -lxml2 -lfftw3${_icu_libs}${_heif_libs} $(pkg-config --libs freetype2 2>/dev/null) $(pkg-config --libs libpng16 2>/dev/null) $(pkg-config --libs libwebp 2>/dev/null) $(pkg-config --libs fontconfig 2>/dev/null) $(pkg-config --libs expat 2>/dev/null) $LIBS"
+}
+
 im () {
 	echo "[+ IM: $1]"
 	cd $IM_DIR
+	_HEIC_CFG="--without-heic"
+	[ "${ENABLE_HEIF:-1}" = "1" ] && _HEIC_CFG="--with-heic=yes"
 	
 	# static library that will be generated
 	LIBPATH_core=${IM_LIB_DIR}_$1/lib/libMagickCore-7.Q8HDRI.a
@@ -43,12 +82,8 @@ im () {
     if [ "$1" == "arm64-sim" ]; then
         save
         armsimflags
-        
-        export PKG_CONFIG_PATH="${PNG_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/:${WEBP_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/:${FREETYPE_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/:${FONTCONFIG_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/:${EXPAT_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/"
         export CC="$(xcode-select -print-path)/usr/bin/gcc"
-        export CPPFLAGS="-I$LIB_DIR/include/jpeg -I$LIB_DIR/include/png  -I$LIB_DIR/include/webp -I$IM_LIB_DIR/include/ImageMagick-7 -I$LIB_DIR/include/fontconfig -I$LIB_DIR/include/expat"
-        export LDFLAGS="$LDFLAGS -L$LIB_DIR/jpeg_${BUILDINGFOR}_dylib/ -L${LIB_DIR}/png_${BUILDINGFOR}_dylib/   -L$LIB_DIR/webp_${BUILDINGFOR}_dylib/ -L$LIB_DIR/fontconfig_${BUILDINGFOR}_dylib/ -L$LIB_DIR/expat_${BUILDINGFOR}_dylib/"
-        export LIBS="$(pkg-config --libs freetype2) $(pkg-config --libs libpng16) $(pkg-config --libs libwebp) $(pkg-config --libs fontconfig) $(pkg-config --libs expat) $LIBS"
+        _im_delegate_exports "$1"
 
         echo "[|- CONFIG $BUILDINGFOR]"
         host_arch="aarch64"
@@ -58,7 +93,9 @@ im () {
             --disable-largefile \
             --with-quantum-depth=8 \
             --with-magick-plus-plus \
+            --with-jpeg \
             --with-png \
+            --with-tiff \
             --with-freetype \
             --with-fontconfig \
             --with-xml \
@@ -67,11 +104,13 @@ im () {
             --without-x \
             --disable-shared \
             --disable-openmp \
-            --without-bzlib \
+            --with-bzlib=yes \
             --without-openexr \
-            --without-lcms \
-            --without-lzma \
-            --without-openjp2 \
+            --with-lcms=yes \
+            --with-lzma=yes \
+            --with-openjp2=yes \
+            --with-fftw=yes \
+            ${_HEIC_CFG} \
             --without-zip \
             --host=${host_arch}-apple-darwin
         im_compile
@@ -79,23 +118,11 @@ im () {
     elif [ "$1" == "armv7" ] || [ "$1" == "armv7s" ] || [ "$1" == "arm64" ]; then
         save
         armflags $1
-        
-        export PKG_CONFIG_PATH="${PNG_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/:${FREETYPE_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/:${FONTCONFIG_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/:$PKG_CONFIG_PATH"
-       
-        
 		export CC="$(xcode-select -print-path)/usr/bin/gcc" # override clang
 		# export CPPFLAGS="-I$LIB_DIR/include/jpeg -I$LIB_DIR/include/png  -I$LIB_DIR/include/webp -I$IM_LIB_DIR/include/ImageMagick-7 -I$LIB_DIR/include/fontconfig"
         
         export CFLAGS="$CFLAGS -DTARGET_OS_IPHONE "
-        
-		# export LDFLAGS="$LDFLAGS -L$LIB_DIR/jpeg_${BUILDINGFOR}_dylib/ -L${LIB_DIR}/png_${BUILDINGFOR}_dylib/   -L$LIB_DIR/webp_${BUILDINGFOR}_dylib/ -L$LIB_DIR/fontconfig_${BUILDINGFOR}_dylib/  -L$LIB_DIR "
-       
-    	export PKG_CONFIG_PATH="${PNG_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/:${WEBP_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/:${FREETYPE_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/:${FONTCONFIG_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/:${EXPAT_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/"
-        
-        export CPPFLAGS="-I$LIB_DIR/include/jpeg -I$LIB_DIR/include/png  -I$LIB_DIR/include/webp -I$IM_LIB_DIR/include/ImageMagick-7 -I$LIB_DIR/include/fontconfig -I$LIB_DIR/include/expat"
-        export LDFLAGS="$LDFLAGS -L$LIB_DIR/jpeg_${BUILDINGFOR}_dylib/ -L${LIB_DIR}/png_${BUILDINGFOR}_dylib/   -L$LIB_DIR/webp_${BUILDINGFOR}_dylib/ -L$LIB_DIR/fontconfig_${BUILDINGFOR}_dylib/ -L$LIB_DIR/expat_${BUILDINGFOR}_dylib/"
-        export LIBS="$(pkg-config --libs freetype2) $(pkg-config --libs libpng16) $(pkg-config --libs libwebp) $(pkg-config --libs fontconfig) $(pkg-config --libs expat) $LIBS"
-
+        _im_delegate_exports "$1"
 
 		echo "[|- CONFIG $BUILDINGFOR]"
         
@@ -110,7 +137,9 @@ im () {
             --disable-largefile \
             --with-quantum-depth=8 \
             --with-magick-plus-plus \
+            --with-jpeg \
             --with-png \
+            --with-tiff \
             --with-freetype \
             --with-fontconfig \
 			--with-xml \
@@ -119,11 +148,13 @@ im () {
             --without-x \
             --disable-shared \
             --disable-openmp \
-            --without-bzlib \
+            --with-bzlib=yes \
             --without-openexr \
-            --without-lcms \
-            --without-lzma \
-            --without-openjp2 \
+            --with-lcms=yes \
+            --with-lzma=yes \
+            --with-openjp2=yes \
+            --with-fftw=yes \
+            ${_HEIC_CFG} \
 			--without-zip \
             --host=${host_arch}-apple-darwin
             
@@ -142,15 +173,7 @@ im () {
 	
         # export CC="clang"
 		export CC="$(xcode-select -print-path)/usr/bin/gcc"
-
-        # export CPPFLAGS="-I$LIB_DIR/include/jpeg -I$LIB_DIR/include/png  -I$LIB_DIR/include/webp -I$LIB_DIR/include/raw -I$IM_LIB_DIR/include/ImageMagick-7 -I$LIB_DIR/include/fontconfig"
-        # export LDFLAGS="$LDFLAGS -L$LIB_DIR/jpeg_${BUILDINGFOR}_dylib/ -L${LIB_DIR}/png_${BUILDINGFOR}_dylib/   -L$LIB_DIR/webp_${BUILDINGFOR}_dylib/ -L$LIB_DIR/raw_${BUILDINGFOR}_dylib/ -L$LIB_DIR/fontconfig_${BUILDINGFOR}_dylib/  -L$LIB_DIR "
-		# export PKG_CONFIG_PATH=""
-        export PKG_CONFIG_PATH="${PNG_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/:${WEBP_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/:${FREETYPE_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/:${FONTCONFIG_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/:${EXPAT_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/"
-        
-        export CPPFLAGS="-I$LIB_DIR/include/jpeg -I$LIB_DIR/include/png  -I$LIB_DIR/include/webp -I$IM_LIB_DIR/include/ImageMagick-7 -I$LIB_DIR/include/fontconfig -I$LIB_DIR/include/expat"
-        export LDFLAGS="$LDFLAGS -L$LIB_DIR/jpeg_${BUILDINGFOR}_dylib/ -L${LIB_DIR}/png_${BUILDINGFOR}_dylib/   -L$LIB_DIR/webp_${BUILDINGFOR}_dylib/ -L$LIB_DIR/fontconfig_${BUILDINGFOR}_dylib/ -L$LIB_DIR/expat_${BUILDINGFOR}_dylib/"
-        export LIBS="$(pkg-config --libs freetype2) $(pkg-config --libs libpng16) $(pkg-config --libs libwebp) $(pkg-config --libs fontconfig) $(pkg-config --libs expat) $LIBS"
+        _im_delegate_exports "$1"
 
 		echo "[|- CONFIG $BUILDINGFOR]"
 		try ./configure \
@@ -159,7 +182,9 @@ im () {
             --disable-largefile \
             --with-quantum-depth=8 \
             --with-magick-plus-plus \
+            --with-jpeg \
             --with-png \
+            --with-tiff \
             --with-freetype \
             --with-fontconfig \
 			--with-xml \
@@ -168,11 +193,13 @@ im () {
             --without-x \
             --disable-shared \
             --disable-openmp \
-            --without-bzlib \
+            --with-bzlib=yes \
             --without-openexr \
-            --without-lcms \
-            --without-lzma \
-            --without-openjp2 \
+            --with-lcms=yes \
+            --with-lzma=yes \
+            --with-openjp2=yes \
+            --with-fftw=yes \
+            ${_HEIC_CFG} \
 			--without-zip \
             --host=${BUILDINGFOR}-apple-darwin
             
@@ -181,10 +208,7 @@ im () {
 	elif [ "$1" == "mac-arm64" ]; then
 		save
 		macflags $1
-		export PKG_CONFIG_PATH="${PNG_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/:${WEBP_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/:${FREETYPE_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/:${FONTCONFIG_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/:${EXPAT_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/"
-		export CPPFLAGS="-I$LIB_DIR/include/jpeg -I$LIB_DIR/include/png -I$LIB_DIR/include/webp -I$IM_LIB_DIR/include/ImageMagick-7 -I$LIB_DIR/include/fontconfig -I$LIB_DIR/include/expat"
-		export LDFLAGS="$LDFLAGS -L$LIB_DIR/jpeg_${BUILDINGFOR}_dylib/ -L${LIB_DIR}/png_${BUILDINGFOR}_dylib/ -L$LIB_DIR/webp_${BUILDINGFOR}_dylib/ -L$LIB_DIR/fontconfig_${BUILDINGFOR}_dylib/ -L$LIB_DIR/expat_${BUILDINGFOR}_dylib/"
-		export LIBS="$(pkg-config --libs freetype2) $(pkg-config --libs libpng16) $(pkg-config --libs libwebp) $(pkg-config --libs fontconfig) $(pkg-config --libs expat) $LIBS"
+		_im_delegate_exports "$1"
 		echo "[|- CONFIG $BUILDINGFOR]"
 		try ./configure \
 		    --prefix=${IM_LIB_DIR}_${BUILDINGFOR} \
@@ -192,7 +216,9 @@ im () {
 		    --disable-largefile \
 		    --with-quantum-depth=8 \
 		    --with-magick-plus-plus \
+		    --with-jpeg \
 		    --with-png \
+		    --with-tiff \
 		    --with-freetype \
 		    --with-fontconfig \
 		    --with-xml \
@@ -201,11 +227,13 @@ im () {
 		    --without-x \
 		    --disable-shared \
 		    --disable-openmp \
-		    --without-bzlib \
+		    --with-bzlib=yes \
 		    --without-openexr \
-		    --without-lcms \
-		    --without-lzma \
-		    --without-openjp2 \
+		    --with-lcms=yes \
+		    --with-lzma=yes \
+		    --with-openjp2=yes \
+		    --with-fftw=yes \
+		    ${_HEIC_CFG} \
 		    --without-zip \
 		    --host=${MAC_HOST_TRIPLE} \
 		    CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" CPPFLAGS="$CPPFLAGS" LIBS="$LIBS"
@@ -214,10 +242,7 @@ im () {
 	elif [ "$1" == "mac-x86_64" ]; then
 		save
 		macx86flags
-		export PKG_CONFIG_PATH="${PNG_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/:${WEBP_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/:${FREETYPE_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/:${FONTCONFIG_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/:${EXPAT_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/"
-		export CPPFLAGS="-I$LIB_DIR/include/jpeg -I$LIB_DIR/include/png -I$LIB_DIR/include/webp -I$IM_LIB_DIR/include/ImageMagick-7 -I$LIB_DIR/include/fontconfig -I$LIB_DIR/include/expat"
-		export LDFLAGS="$LDFLAGS -L$LIB_DIR/jpeg_${BUILDINGFOR}_dylib/ -L${LIB_DIR}/png_${BUILDINGFOR}_dylib/ -L$LIB_DIR/webp_${BUILDINGFOR}_dylib/ -L$LIB_DIR/fontconfig_${BUILDINGFOR}_dylib/ -L$LIB_DIR/expat_${BUILDINGFOR}_dylib/"
-		export LIBS="$(pkg-config --libs freetype2) $(pkg-config --libs libpng16) $(pkg-config --libs libwebp) $(pkg-config --libs fontconfig) $(pkg-config --libs expat) $LIBS"
+		_im_delegate_exports "$1"
 		echo "[|- CONFIG $BUILDINGFOR]"
 		try ./configure \
 		    --prefix=${IM_LIB_DIR}_${BUILDINGFOR} \
@@ -225,7 +250,9 @@ im () {
 		    --disable-largefile \
 		    --with-quantum-depth=8 \
 		    --with-magick-plus-plus \
+		    --with-jpeg \
 		    --with-png \
+		    --with-tiff \
 		    --with-freetype \
 		    --with-fontconfig \
 		    --with-xml \
@@ -234,11 +261,13 @@ im () {
 		    --without-x \
 		    --disable-shared \
 		    --disable-openmp \
-		    --without-bzlib \
+		    --with-bzlib=yes \
 		    --without-openexr \
-		    --without-lcms \
-		    --without-lzma \
-		    --without-openjp2 \
+		    --with-lcms=yes \
+		    --with-lzma=yes \
+		    --with-openjp2=yes \
+		    --with-fftw=yes \
+		    ${_HEIC_CFG} \
 		    --without-zip \
 		    --host=${MAC_HOST_TRIPLE} \
 		    CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" CPPFLAGS="$CPPFLAGS" LIBS="$LIBS"

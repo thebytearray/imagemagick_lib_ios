@@ -1,14 +1,22 @@
 # imagemagick_lib_ios
 
-imagemagick compile script.
-thank you by [marforic](https://github.com/marforic/imagemagick_lib_iphone).
-I changed the script, which is great for me.
+ImageMagick build scripts for iOS / macOS (static libs and `IMAll.xcframework`).
 
+Thanks to [marforic](https://github.com/marforic/imagemagick_lib_iphone) for the original iPhone scripts. This repo extends and adapts them for current toolchains and delegates.
 
-Architecture: `arm64`、`armv7`、`x86_64`
+**Repository:** [https://github.com/thebytearray/imagemagick_lib_ios](https://github.com/thebytearray/imagemagick_lib_ios)
 
-If you can’t compile successfully, then I have compiled lib here, right here `IMPORT_ME`
-this is imagemagick info:
+Delegate versions are aligned with **Android-ImageMagick7** (`Android.mk` + `scripts/delegates-sync-from-android.sh`). That includes **ICU4C** (for libxml2 with ICU, matching Android), **jpeg-turbo**, **FFTW**, **libheif** stack, etc. Set **`ENABLE_ICU=0`** before `env.sh` if you want a faster build without ICU (then libxml2 is built `--without-icu`). **OpenCL** (Qualcomm) and **libltdl** from the Android tree are not ported—iOS builds keep OpenCL off and use a static module layout.
+
+## Architectures
+
+Typical targets: `arm64`, `armv7`, `x86_64` (and simulator / macOS variants as configured in `env.sh` / `all.sh`).
+
+## Build output
+
+After a successful run, see the **`IMPORT_ME`** folder for headers and libraries / xcframework pieces used by the Swift wrapper repo ([im-swift](https://github.com/thebytearray/im-swift)).
+
+Example ImageMagick build info (older reference build):
 
 ```
 Version: ImageMagick 7.1.0-3 Q8 arm 2021-06-25 https://imagemagick.org
@@ -18,41 +26,26 @@ Features: Cipher DPC HDRI
 Delegates (built-in): fontconfig freetype jng jpeg png xml zlib
 ```
 
-#### Question
-If you have encountered this problem:
-```
-ld: warning: ignoring file /usr/local/Cellar/openexr/3.0.3/lib/libOpenEXRUtil-3_0.dylib, building for iOS-arm64 but attempting to link with file built for macOS-x86_64
-ld: warning: ignoring file /usr/local/Cellar/webp/1.2.0/lib/libwebpdemux.dylib, building for iOS-arm64 but attempting to link with file built for macOS-x86_64
-ld: warning: ignoring file /usr/local/Cellar/webp/1.2.0/lib/libwebp.dylib, building for iOS-arm64 but attempting to link with file built for macOS-x86_64
-ld: warning: ignoring file /usr/local/Cellar/openjpeg/2.4.0/lib/libopenjp2.dylib, building for iOS-arm64 but attempting to link with file built for macOS-x86_64
-ld: warning: ignoring file /usr/local/Cellar/openexr/3.0.3/lib/libIlmThread-3_0.dylib, building for iOS-arm64 but attempting to link with file built for macOS-x86_64
-ld: warning: ignoring file /usr/local/Cellar/openexr/3.0.3/lib/libIex-3_0.dylib, building for iOS-arm64 but attempting to link with file built for macOS-x86_64
-ld: warning: ignoring file /usr/local/Cellar/imath/3.0.3/lib/libImath-3_0.dylib, building for iOS-arm64 but attempting to link with file built for macOS-x86_64
-Undefined symbols for architecture arm64:
-"_FcConfigDestroy", referenced from:
-      _LoadFontConfigFonts in libMagickCore-7.Q8HDRI.a(libMagickCore_7_Q8HDRI_la-type.o)
-  "_FcConfigGetCurrent", referenced from:
-      _LoadFontConfigFonts in libMagickCore-7.Q8HDRI.a(libMagickCore_7_Q8HDRI_la-type.o)
-  "_FcConfigSetRescanInterval", referenced from:
-      _LoadFontConfigFonts in libMagickCore-7.Q8HDRI.a(libMagickCore_7_Q8HDRI_la-type.o)
-...
-  "_png_write_info", referenced from:
-      _WriteOnePNGImage in libMagickCore-7.Q8HDRI.a(MagickCore_libMagickCore_7_Q8HDRI_la-png.o)
-  "_png_write_info_before_PLTE", referenced from:
-      _WriteOnePNGImage in libMagickCore-7.Q8HDRI.a(MagickCore_libMagickCore_7_Q8HDRI_la-png.o)
-  "_png_write_row", referenced from:
-      _WriteOnePNGImage in libMagickCore-7.Q8HDRI.a(MagickCore_libMagickCore_7_Q8HDRI_la-png.o)
-ld: symbol(s) not found for architecture arm64
-clang: error: linker command failed with exit code 1 (use -v to see invocation)
-make[1]: *** [utilities/magick] Error 1
-make: *** [all] Error 2
+## Troubleshooting
+
+If you see linker errors like:
 
 ```
-* you can remove local lib by brew 
+ld: warning: ignoring file /usr/local/Cellar/openexr/... dylib, building for iOS-arm64 but attempting to link with file built for macOS-x86_64
+...
+Undefined symbols for architecture arm64:
+"_FcConfigDestroy", ...
+"_png_write_info", ...
+```
+
+then Homebrew (or other) **macOS** libraries are being picked up instead of the iOS-built delegates.
+
+**Fix:**
+
+- Remove conflicting Homebrew packages, for example:
 
 ```
 brew uninstall --ignore-dependencies webp
 ```
-or
 
-* recompile the new library.
+- Or adjust `CPPFLAGS` / `LDFLAGS` so only the delegates built by this project are used, then **rebuild** the libraries.

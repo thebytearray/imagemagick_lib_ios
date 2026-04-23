@@ -1,62 +1,97 @@
 #!/bin/bash
+set -e
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-if [[ $# != 1 ]]; then
-	echo "$0 takes 1 argument: the version of ImageMagick you want to compile!"
-	echo "EXAMPLE: $0 6.8.8-2"
-	exit
+if [[ "${1:-}" == "clean" ]]; then
+	rm -rf "$SCRIPT_DIR/target" "$SCRIPT_DIR/IMPORT_ME" "$SCRIPT_DIR"/*.log 2>/dev/null || true
+	echo "Clean done."
+	exit 0
+fi
+
+if [[ $# -lt 1 ]]; then
+	echo "$0 IM_VERSION [zip]  — e.g. $0 7.1.0-2"
+	echo "EXAMPLE: $0 7.1.0-2"
+	echo "After build, optional: $0 7.1.0-2 zip"
+	exit 1
 fi
 
 export IM_VERSION="$1"
 
-# Configuration / Function scripts
-. $(dirname $0)/env.sh   # environment variables
-. $(dirname $0)/flags.sh # compiler flags
-. $(dirname $0)/utils.sh # various functions
-# Compilation scripts
+. "$SCRIPT_DIR/env.sh"
+. "$SCRIPT_DIR/flags.sh"
+. "$SCRIPT_DIR/utils.sh"
 
-# . $(dirname $0)/compile_webp.sh  # libwebp
-# . $(dirname $0)/compile_expat.sh # expat
-# . $(dirname $0)/compile_png.sh  # libPNG
-# . $(dirname $0)/compile_jpeg.sh # JPEG
-# . $(dirname $0)/compile_tiff.sh # TIFF
-# . $(dirname $0)/compile_freetype.sh
-. $(dirname $0)/compile_fontconfig.sh
-# # . $(dirname $0)/compile_openjpeg.sh #
-# . $(dirname $0)/compile_im.sh   # ImageMagick
-
-
-
-# --- CLEAN IS SPECIAL --- #
-if [[ $1 == "clean" ]]; then
-	echo "Cleaning..."
-	rm *.log 2>/dev/null
-	rm -r ${TARGET_LIB_DIR}/ 2>/dev/null
-	rm -r ${FINAL_DIR}/ 2>/dev/null
-	echo "Done!"
-	exit 0
+. "$SCRIPT_DIR/compile_zlib.sh"
+. "$SCRIPT_DIR/compile_iconv.sh"
+if [[ "${ENABLE_ICU:-1}" == "1" ]]; then
+	. "$SCRIPT_DIR/compile_icu.sh"
 fi
+. "$SCRIPT_DIR/compile_lzma.sh"
+. "$SCRIPT_DIR/compile_bzlib.sh"
+. "$SCRIPT_DIR/compile_xml2.sh"
+. "$SCRIPT_DIR/compile_fftw.sh"
+if [[ "${USE_JPEG_TURBO:-1}" == "1" ]]; then
+	. "$SCRIPT_DIR/compile_jpegturbo.sh"
+else
+	. "$SCRIPT_DIR/compile_jpeg.sh"
+fi
+. "$SCRIPT_DIR/compile_png.sh"
+. "$SCRIPT_DIR/compile_tiff.sh"
+. "$SCRIPT_DIR/compile_webp.sh"
+. "$SCRIPT_DIR/compile_lcms2.sh"
+. "$SCRIPT_DIR/compile_openjpeg.sh"
+if [[ "${ENABLE_HEIF:-1}" == "1" ]]; then
+	. "$SCRIPT_DIR/compile_de265.sh"
+	. "$SCRIPT_DIR/compile_aom.sh"
+	. "$SCRIPT_DIR/compile_heif.sh"
+fi
+. "$SCRIPT_DIR/compile_freetype.sh"
+. "$SCRIPT_DIR/compile_expat.sh"
+. "$SCRIPT_DIR/compile_fontconfig.sh"
+if [[ "${BUILD_GHOSTSCRIPT:-0}" == "1" ]]; then
+	. "$SCRIPT_DIR/compile_gs.sh"
+fi
+. "$SCRIPT_DIR/compile_im.sh"
 
-# --- ZIP IS SPECIAL --- #
-# Used by Claudio Marforio to generate zips for the imagemagick FTP
-if [[ $1 == "zip" ]]; then
+if [[ "${2:-}" == "zip" ]]; then
 	zip_for_ftp
 	exit 0
 fi
 
-# --- WHAT GETS EXECUTED --- #
 prepare
 
 for i in $ARCHS; do
-	png $i
-	webp $i
-	jpeg $i
-	tiff $i
-    openjpeg $i
-    freetype $i
-    ghostscript $i
-    expat $i
-    fontconfig $i
-	im $i
+	zlib "$i"
+	iconv "$i"
+	if [[ "${ENABLE_ICU:-1}" == "1" ]]; then
+		icu "$i"
+	fi
+	lzma "$i"
+	bzlib "$i"
+	xml2 "$i"
+	fftw "$i"
+	if [[ "${USE_JPEG_TURBO:-1}" == "1" ]]; then
+		jpegturbo "$i"
+	else
+		jpeg "$i"
+	fi
+	png "$i"
+	tiff "$i"
+	webp "$i"
+	lcms2 "$i"
+	openjpeg "$i"
+	if [[ "${ENABLE_HEIF:-1}" == "1" ]]; then
+		de265 "$i"
+		aom "$i"
+		heif "$i"
+	fi
+	freetype "$i"
+	expat "$i"
+	fontconfig "$i"
+	if [[ "${BUILD_GHOSTSCRIPT:-0}" == "1" ]]; then
+		ghostscript "$i"
+	fi
+	im "$i"
 done
 
 structure_for_xcode

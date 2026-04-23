@@ -1,0 +1,69 @@
+name: Sync delegate versions (Android.mk)
+
+on:
+  schedule:
+    - cron: "0 9 * * 1"
+  workflow_dispatch:
+    inputs:
+      android_mk:
+        description: Repo-relative path to Android.mk
+        type: string
+        default: Android-ImageMagick7/Android.mk
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Sync delegates-manifest.sh from Android.mk
+        id: sync
+        env:
+          ANDROID_MK_REL: ${{ github.event.inputs.android_mk || 'Android-ImageMagick7/Android.mk' }}
+        run: |
+          set -euo pipefail
+          ws="${GITHUB_WORKSPACE}"
+          if [[ -f "${ws}/imagemagick_lib_ios/scripts/delegates-manifest.sh" ]]; then
+            manifest="${ws}/imagemagick_lib_ios/scripts/delegates-manifest.sh"
+            sync_sh="${ws}/imagemagick_lib_ios/scripts/delegates-sync-from-android.sh"
+            pr_path="imagemagick_lib_ios"
+          elif [[ -f "${ws}/scripts/delegates-manifest.sh" ]]; then
+            manifest="${ws}/scripts/delegates-manifest.sh"
+            sync_sh="${ws}/scripts/delegates-sync-from-android.sh"
+            pr_path="."
+          else
+            echo "::error::Could not find delegates-manifest.sh"
+            exit 1
+          fi
+          amk="${ws}/${ANDROID_MK_REL}"
+          if [[ ! -f "${amk}" ]]; then
+            echo "::notice::No Android.mk at ${amk} — skipping (add Android-ImageMagick7 to this repo or set android_mk)."
+            echo "changed=false" >> "${GITHUB_OUTPUT}"
+            exit 0
+          fi
+          bash "${sync_sh}" "${amk}" "${manifest}"
+          if git -C "${ws}" diff --quiet -- "${manifest}"; then
+            echo "changed=false" >> "${GITHUB_OUTPUT}"
+          else
+            echo "changed=true" >> "${GITHUB_OUTPUT}"
+          fi
+          echo "manifest=${manifest}" >> "${GITHUB_OUTPUT}"
+          echo "pr_path=${pr_path}" >> "${GITHUB_OUTPUT}"
+
+      - name: Open pull request
+        if: steps.sync.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: sync delegate versions from Android-ImageMagick7"
+          title: "chore: sync iOS delegate versions from Android.mk"
+          body: |
+            Automated update of delegate defaults in `delegates-manifest.sh` using `scripts/delegates-sync-from-android.sh` and `Android-ImageMagick7/Android.mk`.
+
+            Review URLs and run `scripts/ensure-delegate-sources.sh` / CI before merging.
+          branch: chore/sync-delegates-android
+          delete-branch: true
+          path: ${{ steps.sync.outputs.pr_path }}
