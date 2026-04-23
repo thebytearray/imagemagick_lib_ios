@@ -1,11 +1,25 @@
 #!/bin/bash
 # ICU4C — cross-build for iOS/macOS targets (Android-ImageMagick7 uses libicu4c-64-2).
 # Requires a one-time native host build under $BUILDROOT/icu-host-bld (--with-cross-build).
+# ICU's build system requires GNU make; Apple's /usr/bin/make is BSD make and usually fails.
+
+_icu_gnu_make() {
+	if command -v gmake >/dev/null 2>&1; then
+		printf '%s\n' "gmake"
+		return 0
+	fi
+	if make --version 2>/dev/null | head -n1 | grep -qi gnu; then
+		printf '%s\n' "make"
+		return 0
+	fi
+	echo "[ERR] ICU4C requires GNU make. On macOS: brew install make  (provides gmake on PATH)" >&2
+	exit 1
+}
 
 icu_compile() {
 	echo "[|- MAKE ICU $BUILDINGFOR]"
-	try make -j"$CORESNUM"
-	try make install
+	try "$ICU_MAKE" -j"$CORESNUM"
+	try "$ICU_MAKE" install
 	try cp "${ICU_LIB_DIR}_${BUILDINGFOR}/lib/libicuuc.a" "$LIB_DIR/libicuuc.a.$BUILDINGFOR"
 	try cp "${ICU_LIB_DIR}_${BUILDINGFOR}/lib/libicui18n.a" "$LIB_DIR/libicui18n.a.$BUILDINGFOR"
 	try cp "${ICU_LIB_DIR}_${BUILDINGFOR}/lib/libicudata.a" "$LIB_DIR/libicudata.a.$BUILDINGFOR"
@@ -47,17 +61,20 @@ _ensure_icu_host_tools() {
 	mkdir -p "$host_bld"
 	(
 		cd "$host_bld" || exit 1
+		export MAKE="$ICU_MAKE"
+		export U_MAKE="$ICU_MAKE"
 		if [ -x "$icu_src/runConfigureICU" ]; then
 			try "$icu_src/runConfigureICU" MacOSX
 		else
 			try "$icu_src/configure" --prefix="$host_bld/dist" --enable-static --disable-shared --disable-tests --disable-samples
 		fi
-		try make -j"$CORESNUM"
+		try "$ICU_MAKE" -j"$CORESNUM"
 	)
 }
 
 icu() {
 	echo "[+ ICU4C: $1]"
+	export ICU_MAKE="$(_icu_gnu_make)"
 	_ensure_icu_host_tools
 	local host_bld="${BUILDROOT}/icu-host-bld"
 	export ICU_TARGET_BLD="${BUILDROOT}/icu-target-$1-bld"
@@ -66,6 +83,8 @@ icu() {
 
 	_icu_configure_and_build() {
 		cd "$ICU_TARGET_BLD" || exit 1
+		export MAKE="$ICU_MAKE"
+		export U_MAKE="$ICU_MAKE"
 		try "$ICU_DIR/configure" \
 			--host="$(_icu_host)" \
 			--with-cross-build="$host_bld" \
