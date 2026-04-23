@@ -20,6 +20,8 @@ export IM_VERSION="$1"
 . "$SCRIPT_DIR/env.sh"
 . "$SCRIPT_DIR/flags.sh"
 . "$SCRIPT_DIR/utils.sh"
+# shellcheck source=scripts/ios_delegate_cmake.sh
+. "$SCRIPT_DIR/scripts/ios_delegate_cmake.sh"
 
 . "$SCRIPT_DIR/compile_zlib.sh"
 . "$SCRIPT_DIR/compile_iconv.sh"

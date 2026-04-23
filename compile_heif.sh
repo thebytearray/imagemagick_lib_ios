@@ -5,32 +5,21 @@ heif_compile() {
 	local dp="${DE265_LIB_DIR}_${BUILDINGFOR}"
 	local ap="${AOM_LIB_DIR}_${BUILDINGFOR}"
 	echo "[|- CMAKE libheif $BUILDINGFOR"
+	im_ios_delegate_cmake_base "$1"
 	rm -rf _heifbuild
 	mkdir _heifbuild
 	(
 		cd _heifbuild
-		local sysroot="" archc=""
-		case "$1" in
-			armv7|armv7s|arm64) sysroot="$IOSSDKROOT" archc="$1" ;;
-			arm64-sim) sysroot="$SIMSDKROOT" archc="arm64" ;;
-			i386|x86_64) sysroot="$SIMSDKROOT" archc="$1" ;;
-			mac-arm64) sysroot="$MACSDKROOT" archc="arm64" ;;
-			mac-x86_64) sysroot="$MACSDKROOT" archc="x86_64" ;;
-		esac
 		try cmake "$HEIF_DIR" \
 			-DCMAKE_INSTALL_PREFIX="$p" \
-			-DCMAKE_BUILD_TYPE=Release \
+			"${_IM_CMAKE_OPTS[@]}" \
 			-DCMAKE_PREFIX_PATH="$dp;$ap" \
 			-DWITH_LIBDE265=ON \
 			-DWITH_AOM_DECODER=ON \
 			-DWITH_AOM_ENCODER=ON \
 			-DBUILD_SHARED_LIBS=OFF \
 			-DBUILD_STATIC_LIBS=ON \
-			-DENABLE_PLUGIN_LOADING=OFF \
-			-DCMAKE_OSX_SYSROOT="$sysroot" \
-			-DCMAKE_OSX_ARCHITECTURES="$archc" \
-			-DCMAKE_C_COMPILER="${CC:-$(xcrun -find clang)}" \
-			-DCMAKE_CXX_COMPILER="${CXX:-$(xcrun -find clang++)}"
+			-DENABLE_PLUGIN_LOADING=OFF
 		try cmake --build . --parallel "${CORESNUM:-4}"
 		try cmake --install .
 	)

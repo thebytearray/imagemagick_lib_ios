@@ -46,7 +46,7 @@ freetype () {
             i386) host_arch="i386" ;;
         esac
         try ./configure \
-        prefix=${FREETYPE_LIB_DIR}_${BUILDINGFOR} \
+        --prefix="${FREETYPE_LIB_DIR}_${BUILDINGFOR}" \
         --with-pic \
         --with-zlib \
         --with-png \
@@ -80,7 +80,7 @@ freetype () {
             i386) host_arch="i386" ;;
         esac
         try ./configure \
-        prefix=${FREETYPE_LIB_DIR}_${BUILDINGFOR} \
+        --prefix="${FREETYPE_LIB_DIR}_${BUILDINGFOR}" \
         --with-pic \
         --with-zlib \
         --with-png \
@@ -114,7 +114,7 @@ freetype () {
             i386) host_arch="i386" ;;
         esac
         try ./configure \
-        prefix=${FREETYPE_LIB_DIR}_${BUILDINGFOR} \
+        --prefix="${FREETYPE_LIB_DIR}_${BUILDINGFOR}" \
         --with-pic \
         --with-zlib \
         --with-png \
@@ -138,7 +138,7 @@ freetype () {
         echo "[|- CONFIG $BUILDINGFOR]"
         export PKG_CONFIG_PATH="${PNG_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/:$PKG_CONFIG_PATH"
         try ./configure \
-        prefix=${FREETYPE_LIB_DIR}_${BUILDINGFOR} \
+        --prefix="${FREETYPE_LIB_DIR}_${BUILDINGFOR}" \
         --with-pic \
         --with-zlib \
         --with-png \
@@ -162,7 +162,7 @@ freetype () {
         echo "[|- CONFIG $BUILDINGFOR]"
         export PKG_CONFIG_PATH="${PNG_LIB_DIR}_${BUILDINGFOR}/lib/pkgconfig/:$PKG_CONFIG_PATH"
         try ./configure \
-        prefix=${FREETYPE_LIB_DIR}_${BUILDINGFOR} \
+        --prefix="${FREETYPE_LIB_DIR}_${BUILDINGFOR}" \
         --with-pic \
         --with-zlib \
         --with-png \

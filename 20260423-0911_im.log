@@ -1,0 +1,314 @@
+Checking for shared library support...
+Building shared library libz.1.3.1.dylib with /Applications/Xcode.app/Contents/Developer/usr/bin/gcc.
+Checking for size_t... Yes.
+Checking for off64_t... No.
+Checking for fseeko... Yes.
+Checking for strerror... Yes.
+Checking for unistd.h... Yes.
+Checking for stdarg.h... Yes.
+Checking whether to use vs[n]printf() or s[n]printf()... using vs[n]printf().
+Checking for vsnprintf() in stdio.h... Yes.
+Checking for return value of vsnprintf()... Yes.
+Checking for attribute(visibility) support... Yes.
+/Applications/Xcode.app/Contents/Developer/usr/bin/gcc -arch arm64 -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/usr/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -O3 -DHAVE_HIDDEN -I. -c -o example.o test/example.c
+/Applications/Xcode.app/Contents/Developer/usr/bin/gcc -arch arm64 -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/usr/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -O3 -DHAVE_HIDDEN  -c -o adler32.o adler32.c
+/Applications/Xcode.app/Contents/Developer/usr/bin/gcc -arch arm64 -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/usr/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -O3 -DHAVE_HIDDEN  -c -o crc32.o crc32.c
+/Applications/Xcode.app/Contents/Developer/usr/bin/gcc -arch arm64 -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/usr/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -O3 -DHAVE_HIDDEN  -c -o deflate.o deflate.c
+/Applications/Xcode.app/Contents/Developer/usr/bin/gcc -arch arm64 -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/usr/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -O3 -DHAVE_HIDDEN  -c -o infback.o infback.c
+/Applications/Xcode.app/Contents/Developer/usr/bin/gcc -arch arm64 -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/usr/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -O3 -DHAVE_HIDDEN  -c -o inffast.o inffast.c
+/Applications/Xcode.app/Contents/Developer/usr/bin/gcc -arch arm64 -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/usr/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -O3 -DHAVE_HIDDEN  -c -o inflate.o inflate.c
+/Applications/Xcode.app/Contents/Developer/usr/bin/gcc -arch arm64 -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/usr/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -O3 -DHAVE_HIDDEN  -c -o inftrees.o inftrees.c
+/Applications/Xcode.app/Contents/Developer/usr/bin/gcc -arch arm64 -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/usr/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -O3 -DHAVE_HIDDEN  -c -o trees.o trees.c
+/Applications/Xcode.app/Contents/Developer/usr/bin/gcc -arch arm64 -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/usr/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -O3 -DHAVE_HIDDEN  -c -o zutil.o zutil.c
+/Applications/Xcode.app/Contents/Developer/usr/bin/gcc -arch arm64 -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/usr/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -O3 -DHAVE_HIDDEN  -c -o compress.o compress.c
+/Applications/Xcode.app/Contents/Developer/usr/bin/gcc -arch arm64 -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/usr/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -O3 -DHAVE_HIDDEN  -c -o uncompr.o uncompr.c
+/Applications/Xcode.app/Contents/Developer/usr/bin/gcc -arch arm64 -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/usr/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -O3 -DHAVE_HIDDEN  -c -o gzclose.o gzclose.c
+/Applications/Xcode.app/Contents/Developer/usr/bin/gcc -arch arm64 -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/usr/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -O3 -DHAVE_HIDDEN  -c -o gzlib.o gzlib.c
+/Applications/Xcode.app/Contents/Developer/usr/bin/gcc -arch arm64 -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/usr/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -O3 -DHAVE_HIDDEN  -c -o gzread.o gzread.c
+/Applications/Xcode.app/Contents/Developer/usr/bin/gcc -arch arm64 -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/usr/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -O3 -DHAVE_HIDDEN  -c -o gzwrite.o gzwrite.c
+/Applications/Xcode.app/Contents/Developer/usr/bin/gcc -arch arm64 -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/usr/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -O3 -DHAVE_HIDDEN -I. -c -o minigzip.o test/minigzip.c
+/Applications/Xcode.app/Contents/Developer/usr/bin/gcc -arch arm64 -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/usr/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -O3 -fPIC -DHAVE_HIDDEN  -DPIC -c -o objs/crc32.o crc32.c
+/Applications/Xcode.app/Contents/Developer/usr/bin/gcc -arch arm64 -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/usr/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -O3 -fPIC -DHAVE_HIDDEN  -DPIC -c -o objs/adler32.o adler32.c
+/Applications/Xcode.app/Contents/Developer/usr/bin/gcc -arch arm64 -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/usr/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -O3 -fPIC -DHAVE_HIDDEN  -DPIC -c -o objs/deflate.o deflate.c
+/Applications/Xcode.app/Contents/Developer/usr/bin/gcc -arch arm64 -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/usr/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -O3 -fPIC -DHAVE_HIDDEN  -DPIC -c -o objs/infback.o infback.c
+/Applications/Xcode.app/Contents/Developer/usr/bin/gcc -arch arm64 -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/usr/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -O3 -fPIC -DHAVE_HIDDEN  -DPIC -c -o objs/inffast.o inffast.c
+/Applications/Xcode.app/Contents/Developer/usr/bin/gcc -arch arm64 -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/usr/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -O3 -fPIC -DHAVE_HIDDEN  -DPIC -c -o objs/inflate.o inflate.c
+/Applications/Xcode.app/Contents/Developer/usr/bin/gcc -arch arm64 -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/usr/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -O3 -fPIC -DHAVE_HIDDEN  -DPIC -c -o objs/inftrees.o inftrees.c
+/Applications/Xcode.app/Contents/Developer/usr/bin/gcc -arch arm64 -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/usr/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -O3 -fPIC -DHAVE_HIDDEN  -DPIC -c -o objs/trees.o trees.c
+/Applications/Xcode.app/Contents/Developer/usr/bin/gcc -arch arm64 -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/usr/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -O3 -fPIC -DHAVE_HIDDEN  -DPIC -c -o objs/zutil.o zutil.c
+/Applications/Xcode.app/Contents/Developer/usr/bin/gcc -arch arm64 -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/usr/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -O3 -fPIC -DHAVE_HIDDEN  -DPIC -c -o objs/compress.o compress.c
+/Applications/Xcode.app/Contents/Developer/usr/bin/gcc -arch arm64 -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/usr/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -O3 -fPIC -DHAVE_HIDDEN  -DPIC -c -o objs/uncompr.o uncompr.c
+/Applications/Xcode.app/Contents/Developer/usr/bin/gcc -arch arm64 -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/usr/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -O3 -fPIC -DHAVE_HIDDEN  -DPIC -c -o objs/gzclose.o gzclose.c
+/Applications/Xcode.app/Contents/Developer/usr/bin/gcc -arch arm64 -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/usr/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -O3 -fPIC -DHAVE_HIDDEN  -DPIC -c -o objs/gzlib.o gzlib.c
+/Applications/Xcode.app/Contents/Developer/usr/bin/gcc -arch arm64 -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/usr/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -O3 -fPIC -DHAVE_HIDDEN  -DPIC -c -o objs/gzread.o gzread.c
+/Applications/Xcode.app/Contents/Developer/usr/bin/gcc -arch arm64 -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/usr/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -O3 -fPIC -DHAVE_HIDDEN  -DPIC -c -o objs/gzwrite.o gzwrite.c
+libtool -o libz.a adler32.o crc32.o deflate.o infback.o inffast.o inflate.o inftrees.o trees.o zutil.o compress.o uncompr.o gzclose.o gzlib.o gzread.o gzwrite.o 
+/Applications/Xcode.app/Contents/Developer/usr/bin/gcc -arch arm64 -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/usr/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -O3 -DHAVE_HIDDEN -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -o example example.o -L. libz.a
+/Applications/Xcode.app/Contents/Developer/usr/bin/gcc -arch arm64 -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/usr/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -O3 -DHAVE_HIDDEN -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -o minigzip minigzip.o -L. libz.a
+/Applications/Xcode.app/Contents/Developer/usr/bin/gcc -dynamiclib -install_name /Users/batman/Desktop/imGickiOS/imagemagick_lib_ios/target/zlib_arm64-sim/lib/libz.1.dylib -compatibility_version 1 -current_version 1.3.1 -arch arm64 -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/usr/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -O3 -fPIC -DHAVE_HIDDEN -o libz.1.3.1.dylib adler32.lo crc32.lo deflate.lo infback.lo inffast.lo inflate.lo inftrees.lo trees.lo zutil.lo compress.lo uncompr.lo gzclose.lo gzlib.lo gzread.lo gzwrite.lo  -lc -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator
+rm -f libz.dylib libz.1.dylib
+ln -s libz.1.3.1.dylib libz.dylib
+ln -s libz.1.3.1.dylib libz.1.dylib
+/Applications/Xcode.app/Contents/Developer/usr/bin/gcc -arch arm64 -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/usr/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -O3 -DHAVE_HIDDEN -o examplesh example.o -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -L. libz.1.3.1.dylib
+/Applications/Xcode.app/Contents/Developer/usr/bin/gcc -arch arm64 -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/usr/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -O3 -DHAVE_HIDDEN -o minigzipsh minigzip.o -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -L. libz.1.3.1.dylib
+rm -f /Users/batman/Desktop/imGickiOS/imagemagick_lib_ios/target/zlib_arm64-sim/lib/libz.a
+cp libz.a /Users/batman/Desktop/imGickiOS/imagemagick_lib_ios/target/zlib_arm64-sim/lib
+chmod 644 /Users/batman/Desktop/imGickiOS/imagemagick_lib_ios/target/zlib_arm64-sim/lib/libz.a
+cp libz.1.3.1.dylib /Users/batman/Desktop/imGickiOS/imagemagick_lib_ios/target/zlib_arm64-sim/lib
+chmod 755 /Users/batman/Desktop/imGickiOS/imagemagick_lib_ios/target/zlib_arm64-sim/lib/libz.1.3.1.dylib
+rm -f /Users/batman/Desktop/imGickiOS/imagemagick_lib_ios/target/zlib_arm64-sim/share/man/man3/zlib.3
+cp zlib.3 /Users/batman/Desktop/imGickiOS/imagemagick_lib_ios/target/zlib_arm64-sim/share/man/man3
+chmod 644 /Users/batman/Desktop/imGickiOS/imagemagick_lib_ios/target/zlib_arm64-sim/share/man/man3/zlib.3
+rm -f /Users/batman/Desktop/imGickiOS/imagemagick_lib_ios/target/zlib_arm64-sim/lib/pkgconfig/zlib.pc
+cp zlib.pc /Users/batman/Desktop/imGickiOS/imagemagick_lib_ios/target/zlib_arm64-sim/lib/pkgconfig
+chmod 644 /Users/batman/Desktop/imGickiOS/imagemagick_lib_ios/target/zlib_arm64-sim/lib/pkgconfig/zlib.pc
+rm -f /Users/batman/Desktop/imGickiOS/imagemagick_lib_ios/target/zlib_arm64-sim/include/zlib.h /Users/batman/Desktop/imGickiOS/imagemagick_lib_ios/target/zlib_arm64-sim/include/zconf.h
+cp zlib.h zconf.h /Users/batman/Desktop/imGickiOS/imagemagick_lib_ios/target/zlib_arm64-sim/include
+chmod 644 /Users/batman/Desktop/imGickiOS/imagemagick_lib_ios/target/zlib_arm64-sim/include/zlib.h /Users/batman/Desktop/imGickiOS/imagemagick_lib_ios/target/zlib_arm64-sim/include/zconf.h
+cd contrib/minizip && { make clean ; cd ../.. ; }
+/bin/rm -f *.o *~ minizip miniunz test.*
+rm -f *.o *.lo *~ \
+	   example minigzip examplesh minigzipsh \
+	   example64 minigzip64 \
+	   infcover \
+	   libz.* foo.gz so_locations \
+	   _match.s maketree contrib/infback9/*.o
+rm -rf objs
+rm -f *.gcda *.gcno *.gcov
+rm -f contrib/infback9/*.gcda contrib/infback9/*.gcno contrib/infback9/*.gcov
+cp -p zconf.h.in zconf.h
+rm -f Makefile zlib.pc configure.log
+checking for a BSD-compatible install... /usr/bin/install -c
+checking whether build environment is sane... yes
+checking for aarch64-apple-darwin-strip... no
+checking for strip... strip
+checking for a thread-safe mkdir -p... build-aux/install-sh -c -d
+checking for gawk... no
+checking for mawk... no
+checking for nawk... no
+checking for awk... awk
+checking whether make sets $(MAKE)... yes
+checking whether make supports nested variables... yes
+checking whether make sets $(MAKE)... (cached) yes
+checking for aarch64-apple-darwin-gcc... /Applications/Xcode.app/Contents/Developer/usr/bin/gcc
+checking whether the C compiler works... yes
+checking for C compiler default output file name... a.out
+checking for suffix of executables... 
+checking whether we are cross compiling... yes
+checking for suffix of object files... o
+checking whether we are using the GNU C compiler... yes
+checking whether /Applications/Xcode.app/Contents/Developer/usr/bin/gcc accepts -g... yes
+checking for /Applications/Xcode.app/Contents/Developer/usr/bin/gcc option to accept ISO C89... none needed
+checking whether /Applications/Xcode.app/Contents/Developer/usr/bin/gcc understands -c and -o together... yes
+checking whether make supports the include directive... yes (GNU style)
+checking dependency style of /Applications/Xcode.app/Contents/Developer/usr/bin/gcc... none
+checking how to run the C preprocessor... /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -E -arch arm64 -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/usr/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -mios-simulator-version-min=9.0 -target arm64-apple-ios-simulator -O3
+checking for strip... /usr/bin/strip
+checking for aarch64-apple-darwin-strip... /usr/bin/strip
+checking build system type... arm-apple-darwin25.0.0
+checking host system type... aarch64-apple-darwin
+checking for grep that handles long lines and -e... /usr/bin/grep
+checking for egrep... /usr/bin/grep -E
+checking for ANSI C header files... yes
+checking for sys/types.h... yes
+checking for sys/stat.h... yes
+checking for stdlib.h... yes
+checking for string.h... yes
+checking for memory.h... yes
+checking for strings.h... yes
+checking for inttypes.h... yes
+checking for stdint.h... yes
+checking for unistd.h... yes
+checking minix/config.h usability... no
+checking minix/config.h presence... no
+checking for minix/config.h... no
+checking whether it is safe to define __EXTENSIONS__... yes
+checking whether _XOPEN_SOURCE should be defined... no
+checking for Minix Amsterdam compiler... no
+checking for aarch64-apple-darwin-ar... no
+checking for ar... ar
+configure: WARNING: using cross tools not prefixed with host triplet
+checking for aarch64-apple-darwin-ranlib... no
+checking for ranlib... ranlib
+checking for special C compiler options needed for large files... no
+checking for _FILE_OFFSET_BITS value needed for large files... no
+checking how to print strings... printf
+checking for a sed that does not truncate output... /usr/bin/sed
+checking for fgrep... /usr/bin/grep -F
+checking for ld used by /Applications/Xcode.app/Contents/Developer/usr/bin/gcc... /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld
+checking if the linker (/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld) is GNU ld... no
+checking for BSD- or MS-compatible name lister (nm)... no
+checking for aarch64-apple-darwin-dumpbin... no
+checking for aarch64-apple-darwin-link... no
+checking for dumpbin... no
+checking for link... link -dump
+checking the name lister (nm) interface... BSD nm
+checking whether ln -s works... yes
+checking the maximum length of command line arguments... 786432
+checking how to convert arm-apple-darwin25.0.0 file names to aarch64-apple-darwin format... func_convert_file_noop
+checking how to convert arm-apple-darwin25.0.0 file names to toolchain format... func_convert_file_noop
+checking for /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld option to reload object files... -r
+checking for aarch64-apple-darwin-objdump... no
+checking for objdump... objdump
+checking how to recognize dependent libraries... pass_all
+checking for aarch64-apple-darwin-dlltool... no
+checking for dlltool... no
+checking how to associate runtime and link libraries... printf %s\n
+checking for aarch64-apple-darwin-ar... ar
+checking for archiver @FILE support... no
+checking for aarch64-apple-darwin-strip... (cached) /usr/bin/strip
+checking for aarch64-apple-darwin-ranlib... ranlib
+checking command to parse nm output from /Applications/Xcode.app/Contents/Developer/usr/bin/gcc object... ok
+checking for sysroot... no
+checking for a working dd... /bin/dd
+checking how to truncate binary pipes... /bin/dd bs=4096 count=1
+checking for aarch64-apple-darwin-mt... no
+checking for mt... no
+checking if : is a manifest tool... no
+checking for aarch64-apple-darwin-dsymutil... no
+checking for dsymutil... dsymutil
+checking for aarch64-apple-darwin-nmedit... no
+checking for nmedit... nmedit
+checking for aarch64-apple-darwin-lipo... no
+checking for lipo... lipo
+checking for aarch64-apple-darwin-otool... no
+checking for otool... otool
+checking for aarch64-apple-darwin-otool64... no
+checking for otool64... no
+checking for -single_module linker flag... ld: warning: -single_module is obsolete
+no
+checking for -exported_symbols_list linker flag... yes
+checking for -force_load linker flag... yes
+checking for dlfcn.h... yes
+checking for objdir... .libs
+checking if /Applications/Xcode.app/Contents/Developer/usr/bin/gcc supports -fno-rtti -fno-exceptions... yes
+checking for /Applications/Xcode.app/Contents/Developer/usr/bin/gcc option to produce PIC... -fno-common -DPIC
+checking if /Applications/Xcode.app/Contents/Developer/usr/bin/gcc PIC flag -fno-common -DPIC works... yes
+checking if /Applications/Xcode.app/Contents/Developer/usr/bin/gcc static flag -static works... no
+checking if /Applications/Xcode.app/Contents/Developer/usr/bin/gcc supports -c -o file.o... yes
+checking if /Applications/Xcode.app/Contents/Developer/usr/bin/gcc supports -c -o file.o... (cached) yes
+checking whether the /Applications/Xcode.app/Contents/Developer/usr/bin/gcc linker (/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld) supports shared libraries... yes
+checking dynamic linker characteristics... darwin dyld
+checking how to hardcode library paths into programs... immediate
+checking whether stripping libraries is possible... yes
+checking if libtool supports shared libraries... yes
+checking whether to build shared libraries... no
+checking whether to build static libraries... yes
+checking for ld... /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld
+checking if the linker (/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld) is GNU ld... no
+checking for shared library path variable... DYLD_LIBRARY_PATH
+checking whether to activate relocatable installation... no
+checking how to copy files... cp -p
+checking how to make hard links... ln
+checking whether ln -s works... yes
+checking for aarch64-apple-darwin-windres... no
+checking for windres... no
+checking whether the -Werror option is usable... yes
+checking for simple visibility declarations... yes
+checking for shared library run path origin... done
+checking 32-bit host C ABI... no
+checking for the common suffixes of directories in the library search path... lib,lib
+checking for iconv... yes
+checking for working iconv... guessing yes
+checking how to link with libiconv... /Users/batman/Desktop/imGickiOS/imagemagick_lib_ios/target/libiconv_arm64-sim/lib/libiconv.a
+checking for iconv declaration... 
+         extern size_t iconv (iconv_t cd, char * *inbuf, size_t *inbytesleft, char * *outbuf, size_t *outbytesleft);
+checking whether NLS is requested... yes
+checking for msgfmt... /opt/homebrew/bin/msgfmt
+checking for gmsgfmt... /opt/homebrew/bin/msgfmt
+checking for xgettext... /opt/homebrew/bin/xgettext
+checking for msgmerge... /opt/homebrew/bin/msgmerge
+checking for CFPreferencesCopyAppValue... yes
+checking for CFLocaleCopyCurrent... yes
+checking for CFLocaleCopyPreferredLanguages... yes
+checking for GNU gettext in libc... no
+checking for iconv... (cached) yes
+checking for working iconv... (cached) guessing yes
+checking how to link with libiconv... /Users/batman/Desktop/imGickiOS/imagemagick_lib_ios/target/libiconv_arm64-sim/lib/libiconv.a
+checking for GNU gettext in libintl... no
+checking whether to use NLS... no
+checking for mbstate_t... yes
+checking for wchar_t... yes
+checking for getc_unlocked... yes
+checking for mbrtowc... yes
+checking for wcrtomb... yes
+checking for mbsinit... yes
+checking for setlocale... yes
+checking whether <wchar.h> is standalone... yes
+checking for memmove... yes
+checking for nl_langinfo and CODESET... yes
+checking for unistd.h... (cached) yes
+checking for stdlib.h... (cached) yes
+checking for string.h... (cached) yes
+checking for sys/param.h... yes
+checking for limits.h... yes
+checking for sys/stat.h... (cached) yes
+checking for sys/time.h... yes
+checking for wchar.h... yes
+checking for stdint.h... (cached) yes
+checking for sys/socket.h... yes
+checking for symlink... yes
+checking for canonicalize_file_name... no
+checking for getcwd... yes
+checking for readlink... yes
+checking for realpath... yes
+checking for readlinkat... yes
+checking for getprogname... yes
+checking for getexecname... no
+checking for lstat... yes
+checking for _set_invalid_parameter_handler... no
+checking for setenv... yes
+checking for working fcntl.h... cross-compiling
+checking for wchar.h... (cached) yes
+checking for EILSEQ... yes
+checking byte ordering... guessing little endian
+checking for size_t... yes
+checking for working alloca.h... yes
+checking for alloca... yes
+checking whether // is distinct from /... unknown, assuming no
+checking whether realpath works... guessing no
+checking if environ is properly declared... no
+checking whether the preprocessor supports include_next... yes
+checking whether system header files limit the line length... no
+checking for complete errno.h... yes
+checking whether strerror_r is declared... yes
+checking for strerror_r... yes
+checking whether strerror_r returns char *... no
+checking for pid_t... yes
+checking for mode_t... yes
+checking whether limits.h has LLONG_MAX, WORD_BIT, ULLONG_WIDTH etc.... no
+checking whether lstat correctly handles trailing slash... guessing no
+checking whether malloc, realloc, calloc are POSIX compliant... yes
+checking for stdlib.h... (cached) yes
+checking for GNU libc compatible malloc... guessing no
+checking for unsigned long long int... yes
+checking for long long int... yes
+checking for sigset_t... yes
+checking for SIGPIPE... yes
+checking whether setenv is declared... yes
+checking for ssize_t... yes
+checking for uid_t in sys/types.h... yes
+checking whether C symbols are prefixed with underscore at the linker level... yes
+checking whether stat file-mode macros are broken... no
+checking for nlink_t... yes
+checking for stdbool.h that conforms to C99... yes
+checking for _Bool... yes
+checking for wint_t... yes
+checking whether wint_t is too small... no
+checking whether stdint.h conforms to C99... guessing yes
+checking whether stdint.h predates C++11... no
+checking whether stdint.h has UINTMAX_WIDTH etc.... no
+checking whether strerror(0) succeeds... guessing no
+checking for C/C++ restrict keyword... __restrict
+checking for struct timespec in <time.h>... yes
+checking whether clearerr_unlocked is declared... yes
+checking whether feof_unlocked is declared... yes
+checking whether ferror_unlocked is declared... yes
+checking whether fflush_unlocked is declared... no
+checking whether fgets_unlocked is declared... no
+checking whether fputc_unlocked is declared... no
+checking whether fputs_unlocked is declared... no
+checking whether fread_unlocked is declared... no
+checking whether fwrite_unlocked is declared... no
+checking whether getc_unlocked is declared... yes
+checking whether getchar_unlocked is declared... 

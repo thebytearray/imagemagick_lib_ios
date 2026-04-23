@@ -1,37 +1,32 @@
 #!/bin/bash
-# libjpeg-turbo (Android LIBJPEG_TURBO_ENABLED) — CMake build.
+# libjpeg-turbo — CMake build (iOS-aligned via scripts/ios_delegate_cmake.sh).
 
 jpegturbo_compile() {
 	local p="${JPEG_LIB_DIR}_${BUILDINGFOR}"
 	echo "[|- CMAKE install libjpeg-turbo $BUILDINGFOR"
+	im_ios_delegate_cmake_base "$1"
 	rm -rf _jtbuild
 	mkdir _jtbuild
 	(
 		cd _jtbuild
-		local sysroot="" archc=""
-		case "$1" in
-			armv7|armv7s|arm64) sysroot="$IOSSDKROOT" archc="$1" ;;
-			arm64-sim) sysroot="$SIMSDKROOT" archc="arm64" ;;
-			i386|x86_64) sysroot="$SIMSDKROOT" archc="$1" ;;
-			mac-arm64) sysroot="$MACSDKROOT" archc="arm64" ;;
-			mac-x86_64) sysroot="$MACSDKROOT" archc="x86_64" ;;
-		esac
 		try cmake .. \
 			-DCMAKE_INSTALL_PREFIX="$p" \
-			-DCMAKE_BUILD_TYPE=Release \
+			"${_IM_CMAKE_OPTS[@]}" \
 			-DENABLE_STATIC=ON \
-			-DENABLE_SHARED=ON \
-			-DWITH_JPEG8=ON \
-			-DCMAKE_OSX_SYSROOT="$sysroot" \
-			-DCMAKE_OSX_ARCHITECTURES="$archc" \
-			-DCMAKE_C_COMPILER="${CC:-$(xcrun -find clang)}"
+			-DENABLE_SHARED=OFF \
+			-DWITH_JPEG8=ON
 		try cmake --build . --parallel "${CORESNUM:-4}"
 		try cmake --install .
 	)
 	rm -rf _jtbuild
 	try cp "${p}/lib/libjpeg.a" "$LIB_DIR/libjpeg.a.$BUILDINGFOR"
 	mkdir -p "$LIB_DIR/jpeg_${BUILDINGFOR}_dylib"
-	try cp "${p}/lib/libjpeg."*.dylib "$LIB_DIR/jpeg_${BUILDINGFOR}_dylib/libjpeg.dylib" 2>/dev/null || true
+	shopt -s nullglob
+	_jd=("${p}/lib"/libjpeg.*.dylib)
+	shopt -u nullglob
+	if [ "${#_jd[@]}" -gt 0 ]; then
+		try cp "${_jd[0]}" "$LIB_DIR/jpeg_${BUILDINGFOR}_dylib/libjpeg.dylib"
+	fi
 	first=$(echo "$ARCHS" | awk '{print $1;}')
 	if [ "$BUILDINGFOR" == "$first" ]; then
 		try mkdir -p "$LIB_DIR/include/jpeg"

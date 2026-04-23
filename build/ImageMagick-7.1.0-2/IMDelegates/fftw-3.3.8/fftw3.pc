@@ -1,0 +1,11 @@
+prefix=/Users/batman/Desktop/imGickiOS/imagemagick_lib_ios/target/fftw_arm64-sim
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: FFTW
+Description: fast Fourier transform library
+Version: 3.3.8
+Libs: -L${libdir} -lfftw3 
+Libs.private: -lm
+Cflags: -I${includedir}

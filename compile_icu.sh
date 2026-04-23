@@ -30,6 +30,10 @@ _icu_host() {
 }
 
 _ensure_icu_host_tools() {
+	if [ "$(uname -s)" != "Darwin" ]; then
+		echo "[ERR] ICU host tools require macOS (runConfigureICU MacOSX). On Linux CI use ENABLE_ICU=0 or build on a Mac."
+		exit 1
+	fi
 	local icu_src="$ICU_DIR"
 	local host_bld="${BUILDROOT}/icu-host-bld"
 	[ -f "$icu_src/configure" ] || {

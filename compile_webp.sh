@@ -25,8 +25,13 @@ webp_compile() {
 	try cp ${WEBP_LIB_DIR}_${BUILDINGFOR}/lib/$DEMUXLIBLIST_dylib $LIB_DIR/webp_${BUILDINGFOR}_dylib/libwebpdemux.dylib
 
 	echo "5"
-	try cp ${WEBP_LIB_DIR}_${BUILDINGFOR}/lib/$SHARPYUV $LIB_DIR/libsharpyuv.a.$BUILDINGFOR
-	try cp ${WEBP_LIB_DIR}_${BUILDINGFOR}/lib/$sharpyuv_dylib $LIB_DIR/webp_${BUILDINGFOR}_dylib/libsharpyuv.dylib
+	# libsharpyuv is a separate install only in newer libwebp; 1.0.x folds sharp YUV into libwebp.
+	if [ -f "${WEBP_LIB_DIR}_${BUILDINGFOR}/lib/$SHARPYUV" ]; then
+		try cp "${WEBP_LIB_DIR}_${BUILDINGFOR}/lib/$SHARPYUV" "$LIB_DIR/libsharpyuv.a.$BUILDINGFOR"
+	fi
+	if [ -f "${WEBP_LIB_DIR}_${BUILDINGFOR}/lib/$sharpyuv_dylib" ]; then
+		try cp "${WEBP_LIB_DIR}_${BUILDINGFOR}/lib/$sharpyuv_dylib" "$LIB_DIR/webp_${BUILDINGFOR}_dylib/libsharpyuv.dylib"
+	fi
 	echo "6"
     
 	first=`echo $ARCHS | awk '{print $1;}'`

@@ -58,6 +58,7 @@ _im_delegate_exports() {
 	if [ "${ENABLE_HEIF:-1}" = "1" ]; then
 		_heif_libs=" $(pkg-config --libs libheif 2>/dev/null || echo '-lheif -lde265 -laom') -lc++"
 	fi
+	# Static link: libxml2 built with ICU leaves ICU symbols unresolved until ICU libs follow -lxml2.
 	local _icu_libs=""
 	if [ "${ENABLE_ICU:-1}" = "1" ]; then
 		_icu_libs=" -licui18n -licuuc -licudata"

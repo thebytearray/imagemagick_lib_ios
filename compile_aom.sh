@@ -3,23 +3,16 @@
 aom_compile() {
 	local p="${AOM_LIB_DIR}_${BUILDINGFOR}"
 	echo "[|- CMAKE libaom $BUILDINGFOR"
+	im_ios_delegate_cmake_base "$1"
+	_neon=1
+	case "${_IM_CMAKE_ARCH}" in x86_64|i386) _neon=0 ;; esac
 	rm -rf _aombuild
 	mkdir _aombuild
 	(
 		cd _aombuild
-		local sysroot="" archc=""
-		case "$1" in
-			armv7|armv7s|arm64) sysroot="$IOSSDKROOT" archc="$1" ;;
-			arm64-sim) sysroot="$SIMSDKROOT" archc="arm64" ;;
-			i386|x86_64) sysroot="$SIMSDKROOT" archc="$1" ;;
-			mac-arm64) sysroot="$MACSDKROOT" archc="arm64" ;;
-			mac-x86_64) sysroot="$MACSDKROOT" archc="x86_64" ;;
-		esac
-		_neon=1
-		case "$archc" in x86_64|i386) _neon=0 ;; esac
 		try cmake "$AOM_DIR" \
 			-DCMAKE_INSTALL_PREFIX="$p" \
-			-DCMAKE_BUILD_TYPE=Release \
+			"${_IM_CMAKE_OPTS[@]}" \
 			-DENABLE_DOCS=0 \
 			-DENABLE_TESTS=0 \
 			-DENABLE_TOOLS=0 \
@@ -28,11 +21,7 @@ aom_compile() {
 			-DCONFIG_AV1_DECODER=1 \
 			-DCONFIG_AV1_ENCODER=1 \
 			-DAOM_TARGET_CPU=generic \
-			-DENABLE_NEON="$_neon" \
-			-DCMAKE_OSX_SYSROOT="$sysroot" \
-			-DCMAKE_OSX_ARCHITECTURES="$archc" \
-			-DCMAKE_C_COMPILER="${CC:-$(xcrun -find clang)}" \
-			-DCMAKE_CXX_COMPILER="${CXX:-$(xcrun -find clang++)}"
+			-DENABLE_NEON="$_neon"
 		try cmake --build . --parallel "${CORESNUM:-4}"
 		try cmake --install .
 	)

@@ -1,47 +1,21 @@
 #!/bin/bash
 
-# OpenJPEG 2.x — CMake build.
+# OpenJPEG 2.x — CMake build (iOS-aligned via scripts/ios_delegate_cmake.sh).
 
 openjpeg_compile() {
 	local prefix="${OPENJPEG_LIB_DIR}_${BUILDINGFOR}"
 	echo "[|- CMAKE install OpenJPEG $BUILDINGFOR -> $prefix]"
+	im_ios_delegate_cmake_base "$1"
 	rm -rf _buildoj
 	mkdir _buildoj
 	(
 		cd _buildoj
-		local sysroot=""
-		local archcmake=""
-		case "$1" in
-			armv7|armv7s|arm64)
-				sysroot="$IOSSDKROOT"
-				archcmake="$1"
-				;;
-			arm64-sim)
-				sysroot="$SIMSDKROOT"
-				archcmake="arm64"
-				;;
-			i386|x86_64)
-				sysroot="$SIMSDKROOT"
-				archcmake="$1"
-				;;
-			mac-arm64)
-				sysroot="$MACSDKROOT"
-				archcmake="arm64"
-				;;
-			mac-x86_64)
-				sysroot="$MACSDKROOT"
-				archcmake="x86_64"
-				;;
-		esac
 		try cmake .. \
 			-DCMAKE_INSTALL_PREFIX="$prefix" \
-			-DCMAKE_BUILD_TYPE=Release \
-			-DBUILD_SHARED_LIBS=ON \
+			"${_IM_CMAKE_OPTS[@]}" \
+			-DBUILD_SHARED_LIBS=OFF \
 			-DBUILD_STATIC_LIBS=ON \
-			-DBUILD_CODEC=ON \
-			-DCMAKE_OSX_SYSROOT="$sysroot" \
-			-DCMAKE_OSX_ARCHITECTURES="$archcmake" \
-			-DCMAKE_C_COMPILER="${CC:-$(xcrun -find clang)}"
+			-DBUILD_CODEC=OFF
 		try cmake --build . --parallel "${CORESNUM:-4}"
 		try cmake --install .
 	)
@@ -52,7 +26,6 @@ openjpeg_compile() {
 	if [ "$BUILDINGFOR" == "$first" ]; then
 		try mkdir -p "$LIB_DIR/include/openjp2"
 		try cp -r "${prefix}/include/openjpeg-"*/* "$LIB_DIR/include/openjp2/" 2>/dev/null || try cp "${prefix}/include/openjpeg.h" "$LIB_DIR/include/openjp2/" 2>/dev/null || true
-		# openjpeg 2.5 installs into include/openjpeg-2.5/
 		if [ -d "${prefix}/include" ]; then
 			try cp -r "${prefix}/include/." "$LIB_DIR/include/openjp2/" 2>/dev/null || true
 		fi

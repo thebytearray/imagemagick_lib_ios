@@ -30,35 +30,35 @@ tiff () {
         save
         armsimflags
         echo "[|- CONFIG $BUILDINGFOR]"
-        try ./configure prefix=${TIFF_LIB_DIR}_${BUILDINGFOR} --enable-shared --enable-static --disable-cxx --host=${MAC_HOST_TRIPLE}
+        try ./configure --prefix="${TIFF_LIB_DIR}_${BUILDINGFOR}" --enable-shared --enable-static --disable-cxx --host=aarch64-apple-darwin
         tiff_compile
         restore
     elif  [ "$1" == "armv7" ] || [ "$1" == "armv7s" ] || [ "$1" == "arm64" ]; then
         save
         armflags $1
         echo "[|- CONFIG $BUILDINGFOR]"
-        try ./configure prefix=${TIFF_LIB_DIR}_${BUILDINGFOR} --enable-shared --enable-static --disable-cxx --host=arm-apple-darwin
+        try ./configure --prefix="${TIFF_LIB_DIR}_${BUILDINGFOR}" --enable-shared --enable-static --disable-cxx --host=arm-apple-darwin
         tiff_compile
         restore
     elif [ "$1" == "i386" ] || [ "$1" == "x86_64" ]; then
         save
         intelflags $1
         echo "[|- CONFIG $BUILDINGFOR]"
-        try ./configure prefix=${TIFF_LIB_DIR}_${BUILDINGFOR} --enable-shared --enable-static --disable-cxx --host=${BUILDINGFOR}-apple-darwin
+        try ./configure --prefix="${TIFF_LIB_DIR}_${BUILDINGFOR}" --enable-shared --enable-static --disable-cxx --host="${BUILDINGFOR}-apple-darwin"
         tiff_compile
         restore
     elif [ "$1" == "mac-arm64" ]; then
         save
         macflags $1
         echo "[|- CONFIG $BUILDINGFOR]"
-        try ./configure prefix=${TIFF_LIB_DIR}_${BUILDINGFOR} --enable-shared --enable-static --disable-cxx --host=arm-apple-darwin
+        try ./configure --prefix="${TIFF_LIB_DIR}_${BUILDINGFOR}" --enable-shared --enable-static --disable-cxx --host=arm-apple-darwin
         tiff_compile
         restore
     elif [ "$1" == "mac-x86_64" ]; then
         save
         macx86flags
         echo "[|- CONFIG $BUILDINGFOR]"
-        try ./configure prefix=${TIFF_LIB_DIR}_${BUILDINGFOR} --enable-shared --enable-static --disable-cxx --host=${MAC_HOST_TRIPLE}
+        try ./configure --prefix="${TIFF_LIB_DIR}_${BUILDINGFOR}" --enable-shared --enable-static --disable-cxx --host="${MAC_HOST_TRIPLE}"
         tiff_compile
         restore
     else

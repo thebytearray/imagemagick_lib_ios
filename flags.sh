@@ -81,18 +81,22 @@ armsimflags () {
 intelflags () {
 	export INTEL_CC=$(xcrun -find -sdk iphonesimulator clang)
 	export INTEL_LD=$(xcrun -find -sdk iphonesimulator ld)
-	
+	export SIMSDKROOT=$(xcrun --sdk iphonesimulator --show-sdk-path)
+
 	export INTEL_CFLAGS="-arch $1"
+	export INTEL_CFLAGS="$INTEL_CFLAGS -isysroot $SIMSDKROOT"
+	export INTEL_CFLAGS="$INTEL_CFLAGS -mios-simulator-version-min=$SDKMINVER"
 	export INTEL_CFLAGS="$INTEL_CFLAGS -I$SIMSDKROOT/usr/include"
-	
-	# apply INTEL_CC values
-	    export CC="$(xcode-select -print-path)/usr/bin/gcc"
-#	export CC="$INTEL_CC"
+	export INTEL_CFLAGS="$INTEL_CFLAGS -target ${1}-apple-ios-simulator"
+
+	export CC="$INTEL_CC"
+	export CXX="$(xcrun -find -sdk iphonesimulator clang++)"
 	export CPP="$INTEL_CC -E $INTEL_CFLAGS"
 	export CFLAGS="$INTEL_CFLAGS"
+	export CXXFLAGS="$INTEL_CFLAGS"
 	export LD="$INTEL_LD"
-	
-	# export what we are building for
+	export LDFLAGS="-arch $1 -isysroot $SIMSDKROOT -mios-simulator-version-min=$SDKMINVER -target ${1}-apple-ios-simulator"
+
 	export BUILDINGFOR="$1"
 }
 

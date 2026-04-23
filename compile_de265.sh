@@ -31,7 +31,6 @@ de265() {
 	if [ "$1" == "arm64-sim" ]; then
 		save
 		armsimflags
-		export CC="$(xcode-select -print-path)/usr/bin/gcc"
 		try ./configure --prefix="${DE265_LIB_DIR}_${BUILDINGFOR}" --enable-static --disable-shared --disable-dec265 --disable-sherlock265 \
 			--host="$(_de265_host)"
 		de265_compile
@@ -39,7 +38,6 @@ de265() {
 	elif [ "$1" == "armv7" ] || [ "$1" == "armv7s" ] || [ "$1" == "arm64" ]; then
 		save
 		armflags "$1"
-		export CC="$(xcode-select -print-path)/usr/bin/gcc"
 		try ./configure --prefix="${DE265_LIB_DIR}_${BUILDINGFOR}" --enable-static --disable-shared --disable-dec265 --disable-sherlock265 \
 			--host="$(_de265_host)"
 		de265_compile
@@ -47,7 +45,6 @@ de265() {
 	elif [ "$1" == "i386" ] || [ "$1" == "x86_64" ]; then
 		save
 		intelflags "$1"
-		export CC="$(xcode-select -print-path)/usr/bin/gcc"
 		try ./configure --prefix="${DE265_LIB_DIR}_${BUILDINGFOR}" --enable-static --disable-shared --disable-dec265 --disable-sherlock265 \
 			--host="$(_de265_host)"
 		de265_compile

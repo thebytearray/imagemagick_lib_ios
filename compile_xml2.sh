@@ -9,7 +9,12 @@ xml2_compile() {
 	if [ "$BUILDINGFOR" == "$first" ]; then
 		try mkdir -p "$LIB_DIR/include/libxml2"
 		try cp -r "${XML2_LIB_DIR}_${BUILDINGFOR}/include/libxml2" "$LIB_DIR/include/"
-		try cp "${XML2_LIB_DIR}_${BUILDINGFOR}/include/libxml"*.h "$LIB_DIR/include/" 2>/dev/null || true
+		# Optional top-level headers (not always installed next to libxml2/ in 2.9.x).
+		shopt -s nullglob
+		for _h in "${XML2_LIB_DIR}_${BUILDINGFOR}/include"/libxml*.h; do
+			[ -f "$_h" ] && cp "$_h" "$LIB_DIR/include/"
+		done
+		shopt -u nullglob
 	fi
 	try make distclean
 }
