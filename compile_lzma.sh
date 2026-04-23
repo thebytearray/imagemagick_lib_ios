@@ -1,14 +1,16 @@
 #!/bin/bash
 
-# xz 5.2.x Makefiles may try to regenerate aclocal.m4 (needs automake 1.15) if m4/*.m4
-# mtimes are newer than aclocal.m4 — common on CI after configure. Force aclocal.m4 "fresh".
-_lzma_stamp_aclocal() {
-	# Makefile depends on aclocal.m4 newer than m4/*.m4 and configure.ac; otherwise make runs aclocal-1.15.
-	if [ -f aclocal.m4 ]; then
-		[ -d m4 ] && find m4 -type f -exec touch -r aclocal.m4 {} + 2>/dev/null || true
-		[ -f configure.ac ] && touch -r aclocal.m4 configure.ac 2>/dev/null || true
-		touch aclocal.m4
-	fi
+# xz 5.2.x: Make may run autoconf / automake-1.15 / aclocal if shipped outputs look stale. CI has none of these.
+# Dependency chain: m4 + configure.ac → aclocal.m4 → configure, Makefile.in, config.h.in (see Makefile.in rules).
+# Set inputs to a fixed old time, then touch aclocal.m4 slightly newer, then touch shipped outputs to "now" together.
+_lzma_freeze_autotools() {
+	[ -f Makefile.in ] && [ -f configure ] && [ -f aclocal.m4 ] || return 0
+	local ancient=200001010000
+	local mid=200001010001
+	touch -t "$ancient" Makefile.am configure.ac 2>/dev/null || true
+	[ -d m4 ] && find m4 -type f -exec touch -t "$ancient" {} + 2>/dev/null || true
+	touch -t "$mid" aclocal.m4
+	touch configure Makefile.in config.h.in aclocal.m4 2>/dev/null || true
 }
 
 _lzma_configure() {
@@ -17,12 +19,12 @@ _lzma_configure() {
 		--enable-static --disable-shared --host="$_host" \
 		--disable-nls \
 		--disable-xz --disable-xzdec --disable-lzmadec --disable-lzmainfo --disable-lzma-links --disable-scripts
-	_lzma_stamp_aclocal
+	_lzma_freeze_autotools
 }
 
 lzma_compile() {
 	echo "[|- MAKE lzma $BUILDINGFOR]"
-	_lzma_stamp_aclocal
+	_lzma_freeze_autotools
 	try make -j$CORESNUM
 	try make install
 	echo "[|- CP STATIC $BUILDINGFOR]"
